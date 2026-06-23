@@ -1,0 +1,20 @@
+:root {
+    --primary: #5f6fff;
+    --dark: #202124;
+    --text: #6b7280;
+    --border: #ececec;
+    --section: #f8f8f8;
+}
+
+body {
+    font-family: Inter, sans-serif;
+    color: var(--dark);
+}
+
+a {
+    text-decoration: none;
+}
+
+.section-space {
+    padding: 80px 0;
+}

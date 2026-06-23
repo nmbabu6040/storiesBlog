@@ -1,0 +1,27 @@
+.top-header {
+    background: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+.logo {
+    font-size: 32px;
+    font-weight: 800;
+    color: #000;
+}
+
+.logo span {
+    color: var(--primary);
+}
+
+.top-menu a {
+    color: #555;
+    margin-left: 25px;
+    font-size: 14px;
+}
+
+.buy-btn {
+    background: var(--primary);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 6px;
+}

@@ -25,7 +25,7 @@ return new class extends Migration
 
             $table->string('thumbnail')->nullable();
 
-            $table->longText('description');
+            $table->longText('content');
 
             $table->string('meta_title')->nullable();
 

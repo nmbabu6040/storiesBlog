@@ -25,3 +25,6 @@
     padding: 10px 20px;
     border-radius: 6px;
 }
+body {
+    font-family: "Noto Sans JP", sans-serif;
+}

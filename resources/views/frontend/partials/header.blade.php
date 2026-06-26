@@ -8,7 +8,11 @@
 
                 <a href="{{ route('frontend.home') }}" class="logo">
 
-                    stor<span>ies.</span>
+                    @if (!empty($siteSetting->header_logo))
+                        <img src="{{ asset('storage/' . $siteSetting->header_logo) }}" alt="Logo" height="50">
+                    @else
+                        {{ $siteSetting->site_name ?? 'Stories Blog' }}
+                    @endif
 
                 </a>
 
@@ -46,7 +50,7 @@
 
             <div class="collapse navbar-collapse" id="mainMenu">
 
-                <ul class="navbar-nav mx-auto">
+                <ul class="navbar-nav me-auto">
 
                     <li class="nav-item">
                         <a class="nav-link" href="#">
@@ -91,6 +95,18 @@
                     </li>
 
                 </ul>
+
+                <form action="{{ route('frontend.search') }}" method="GET" class="d-flex">
+
+                    <input type="text" name="keyword" class="form-control me-2" placeholder="Search">
+
+                    <button class="btn btn-primary">
+
+                        Search
+
+                    </button>
+
+                </form>
 
             </div>
 

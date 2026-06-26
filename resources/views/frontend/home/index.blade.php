@@ -1,8 +1,8 @@
-@extends('layouts.master')
+@extends('frontend.layouts.master')
 
-@section('title')
-    Stories Blog
-@endsection
+@section('title', 'Storie Blog | Latest Articles')
+
+@section('meta_description', 'Latest articles, news, tutorials and guides')
 
 @section('content')
     {{-- hero section  --}}
@@ -10,59 +10,62 @@
 
         <div class="container">
 
-            <div class="row align-items-center">
+            <div class="row">
 
-                <div class="col-lg-6">
+                <div class="col-lg-6 align-self-center">
 
-                    <div class="hero-subtitle">
+                    <p class="text-primary">
 
-                        Food Guides
-
-                    </div>
-
-                    <h1 class="hero-title">
-
-                        Hello, I'm
-
-                        <span>Steven</span>
-
-                        Welcome to my blog
-
-                    </h1>
-
-                    <p class="hero-description">
-
-                        Don't miss out on the latest news
-                        about Travel tips, Hotels review,
-                        Food guide and more.
+                        <span class="typewrite" data-type='@json($heroTypes)' data-period="2000">
+                        </span>
 
                     </p>
 
-                    <form class="subscribe-form">
+                    <h2 class="fw-bold">
 
-                        <div class="input-group">
+                        Hello, I'm
 
-                            <input type="email" class="form-control" placeholder="Enter your email">
+                        <span>
 
-                            <button class="btn btn-primary">
+                            {{ $setting->author_name }}
 
-                                Subscribe
+                        </span>
 
-                            </button>
+                    </h2>
 
-                        </div>
+                    <h2 class="fw-bold mb-4">
+
+                        {{ $setting->hero_title }}
+
+                    </h2>
+
+                    <h5 class="text-muted mb-5">
+
+                        {{ $setting->hero_subtitle }}
+
+                    </h5>
+
+                    <form action="{{ route('frontend.subscribe') }}" method="POST"
+                        class="input-group form-subcriber mt-30 d-flex">
+
+                        @csrf
+
+                        <input type="email" name="email" class="form-control bg-white font-small"
+                            placeholder="Enter your email" required>
+
+                        <button class="btn bg-primary text-white" type="submit">
+
+                            Subscribe
+
+                        </button>
 
                     </form>
 
                 </div>
 
-                <div class="col-lg-6">
+                <div class="col-lg-6 text-end d-none d-lg-block">
 
-                    <div class="hero-image text-center">
-
-                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1200" alt="Hero">
-
-                    </div>
+                    <img src="{{ asset('storage/' . $setting->hero_image) }}" alt="Hero Image">
 
                 </div>
 
@@ -81,135 +84,205 @@
                 FEATURED POSTS
             </h5>
 
-            <div class="row g-4">
+            <div class="row">
 
-                <div class="col-lg-8">
+                {{-- @if ($featuredPosts->count())
 
-                    <div class="post-card">
+                    <div class="col-lg-8">
 
-                        <img class="post-image" src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=1400"
-                            alt="">
+                        @php
+                            $mainPost = $featuredPosts->first();
+                        @endphp
 
-                        <div class="post-content">
+                        <div class="featuresdSlider owl-carousel">
+                            <div class="post-card featured-large">
 
-                            <span class="post-category">
-                                Travel
-                            </span>
+                                <a href="{{ route('frontend.post.show', $mainPost->slug) }}">
 
-                            <h2 class="post-title">
-                                Beachmaster Elephant Seal Fights
-                                of Rival Male
-                            </h2>
+                                    <img src="{{ asset('storage/' . $mainPost->thumbnail) }}"
+                                        class="post-image featured-main-image">
 
-                            <div class="post-meta">
-                                20 MIN READ • 3K VIEWS
+                                </a>
+
+                                <div class="post-content">
+
+                                    <span class="post-category">
+
+                                        {{ $mainPost->category->name }}
+
+                                    </span>
+
+                                    <h3 class="post-title">
+
+                                        <a href="{{ route('frontend.post.show', $mainPost->slug) }}">
+
+                                            {{ $mainPost->title }}
+
+                                        </a>
+
+                                    </h3>
+
+                                    <div class="postPublishTime d-flex gap-4">
+
+                                        <h6 class="fw-bold text-drak">{{ $mainPost->created_at->diffForHumans() }}</h6>
+
+                                        <h6 class="fw-bold text-drak">{{ $mainPost->views }} views</h6>
+                                    </div>
+
+                                </div>
+
                             </div>
-
                         </div>
 
                     </div>
 
-                </div>
+                    <div class="col-lg-4">
 
-                <div class="col-lg-4">
+                        @foreach ($featuredPosts->skip(1) as $post)
+                            <div class="small-featured-card">
 
-                    <div class="post-card">
+                                <a href="{{ route('frontend.post.show', $post->slug) }}">
 
-                        <img class="post-image-sm"
-                            src="https://images.unsplash.com/photo-1482049016688-2d3e1b311543?q=80&w=1000" alt="">
+                                    <img src="{{ asset('storage/' . $post->thumbnail) }}" class="post-image-sm">
 
-                        <div class="post-content">
+                                </a>
 
-                            <span class="post-category">
-                                Food
-                            </span>
+                                <div class="post-content">
 
-                            <h4 class="post-title-sm">
-                                Want fluffy Japanese pancakes
-                                but can't fly to Tokyo?
-                            </h4>
+                                    <span class="post-category">
 
-                        </div>
+                                        {{ $post->category->name }}
 
-                    </div>
+                                    </span>
 
-                </div>
+                                    <h5>
 
-            </div>
+                                        <a href="{{ route('frontend.post.show', $post->slug) }}">
 
-            <div class="row mt-4 g-4">
+                                            {{ $post->title }}
 
-                <div class="col-lg-4">
+                                        </a>
 
-                    <div class="post-card">
+                                    </h5>
 
-                        <img class="post-image-sm"
-                            src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?q=80&w=1000">
+                                </div>
 
-                        <div class="post-content">
-
-                            <span class="post-category">
-                                Fashion
-                            </span>
-
-                            <h5>
-                                Put Yourself In Your
-                                Customers Shoes
-                            </h5>
-
-                        </div>
+                            </div>
+                        @endforeach
 
                     </div>
 
-                </div>
+                @endif --}}
 
-                <div class="col-lg-4">
+                @if ($featuredPosts->count())
 
-                    <div class="post-card">
+                    <div class="col-lg-8">
 
-                        <img class="post-image-sm"
-                            src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1000">
+                        @php
+                            $mainPost = $featuredPosts->first();
+                        @endphp
 
-                        <div class="post-content">
+                        <div class="featuresdSlider owl-carousel owl-theme">
 
-                            <span class="post-category">
-                                Travel
-                            </span>
+                            @foreach ($featuredPosts as $post)
+                                <div class="item">
 
-                            <h5>
-                                Life and Death in the
-                                Empire of the Tiger
-                            </h5>
+                                    <div class="post-card featured-large">
+
+                                        <a href="{{ route('frontend.post.show', $post->slug) }}">
+
+                                            <img src="{{ asset('storage/' . $post->thumbnail) }}"
+                                                class="post-image featured-main-image" alt="{{ $post->title }}">
+
+                                        </a>
+
+                                        <div class="post-content">
+
+                                            <span class="post-category">
+
+                                                {{ $post->category->name }}
+
+                                            </span>
+
+                                            <h3 class="post-title">
+
+                                                <a href="{{ route('frontend.post.show', $post->slug) }}">
+
+                                                    {{ $post->title }}
+
+                                                </a>
+
+                                            </h3>
+
+                                            <div class="postPublishTime d-flex gap-4">
+
+                                                <h6>{{ $post->created_at->diffForHumans() }}</h6>
+
+                                                <h6>{{ number_format($post->views) }} Views</h6>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            @endforeach
 
                         </div>
+                    </div>
+
+                    <div class="col-lg-4">
+
+                        @foreach ($featuredPosts->skip(1) as $post)
+                            <div class="small-featured-card">
+
+                                <a href="{{ route('frontend.post.show', $post->slug) }}">
+
+                                    <img src="{{ asset('storage/' . $post->thumbnail) }}" class="post-image-sm">
+
+                                </a>
+
+                                <div class="post-content">
+
+                                    <span class="post-category">
+
+                                        {{ $post->category->name }}
+
+                                    </span>
+
+                                    <h5>
+
+                                        <a href="{{ route('frontend.post.show', $post->slug) }}">
+
+                                            {{ $post->title }}
+
+                                        </a>
+
+                                    </h5>
+
+                                    <div class="postPublishTime d-flex align-items-center gap-4">
+
+                                        <h6>{{ $post->created_at->diffForHumans() }}</h6>
+
+                                        •
+
+                                        <h6>{{ $post->reading_time }} min read</h6>
+
+                                        •
+
+                                        <h6>{{ number_format($post->views) }} Views</h6>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        @endforeach
 
                     </div>
 
-                </div>
-
-                <div class="col-lg-4">
-
-                    <div class="post-card">
-
-                        <img class="post-image-sm"
-                            src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=1000">
-
-                        <div class="post-content">
-
-                            <span class="post-category">
-                                Lifestyle
-                            </span>
-
-                            <h5>
-                                When Two Wheels Are Better
-                                Than Four
-                            </h5>
-
-                        </div>
-
-                    </div>
-
-                </div>
+                @endif
 
             </div>
 
@@ -232,38 +305,58 @@
 
                     <div class="row g-4">
 
-                        @for ($i = 1; $i <= 4; $i++)
+                        @foreach ($travelPosts as $post)
                             <div class="col-lg-6">
 
                                 <div class="post-card">
 
-                                    <img class="post-image-sm"
-                                        src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1000">
+                                    <img class="post-image-sm" src="{{ asset('storage/' . $post->thumbnail) }}"
+                                        alt="{{ $post->title }}">
 
                                     <div class="post-content">
 
-                                        <span class="post-category">
-                                            Travel
+                                        <span class="post-category ">
+
+                                            {{ $post->category->name }}
+
                                         </span>
 
-                                        <h5>
-                                            Easy Ways To Use
-                                            Alternatives to Plastic
+                                        <h5 class="post-title">
+
+                                            <a href="{{ route('frontend.post.show', $post->slug) }}">
+
+                                                {{ $post->title }}
+
+                                            </a>
+
                                         </h5>
 
                                         <p class="text-muted">
 
-                                            Creating alternatives to plastic
-                                            can be a game changer.
+                                            {{ \Illuminate\Support\Str::limit(strip_tags($post->content), 80) }}
 
                                         </p>
+
+                                        <small class="text-muted">
+
+                                            <span>{{ $post->created_at->format('d M Y') }}</span>
+
+                                            •
+
+                                            <span>{{ $post->reading_time }} min read</span>
+
+                                            •
+
+                                            <span>{{ $post->formatted_views }} Views</span>
+
+                                        </small>
 
                                     </div>
 
                                 </div>
 
                             </div>
-                        @endfor
+                        @endforeach
 
                     </div>
 
@@ -273,16 +366,19 @@
 
                     <div class="sidebar-widget text-center">
 
-                        <img class="author-img mb-3"
-                            src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=600">
+                        @if (!empty($siteSetting->author_image))
+                            <img class="author-img mb-3" src="{{ asset('storage/' . $siteSetting->author_image) }}">
+                        @endif
 
-                        <h4>Hello, I'm Steven</h4>
+                        <h4>
+
+                            {{ $siteSetting->author_name }}
+
+                        </h4>
 
                         <p>
 
-                            Hi, I'm Steven, a Florida native
-                            who left my career in corporate
-                            wealth management.
+                            {{ $siteSetting->author_description }}
 
                         </p>
 
@@ -294,62 +390,35 @@
                             MOST POPULAR
                         </h5>
 
-                        <div class="small-post">
+                        @foreach ($popularPosts as $post)
+                            <div class="small-post">
 
-                            <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=500">
+                                <img src="{{ asset('storage/' . $post->thumbnail) }}" alt="{{ $post->title }}">
 
-                            <div>
+                                <div>
 
-                                <h6>
-                                    Spending Some Quality
-                                    Time With Kids
-                                </h6>
+                                    <h6>
 
-                                <small>
-                                    8 AUGUST
-                                </small>
+                                        <a href="{{ route('frontend.post.show', $post->slug) }}">
 
-                            </div>
+                                            {{ $post->title }}
 
-                        </div>
+                                        </a>
 
-                        <div class="small-post">
+                                    </h6>
 
-                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=500">
+                                    <small>
 
-                            <div>
+                                        {{ $post->created_at->format('d M Y') }}
 
-                                <h6>
-                                    Relationship Podcasts
-                                    Are Having That Talk
-                                </h6>
+                                        {{ $post->formatted_views }} Views
 
-                                <small>
-                                    9 AUGUST
-                                </small>
+                                    </small>
+
+                                </div>
 
                             </div>
-
-                        </div>
-
-                        <div class="small-post">
-
-                            <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=500">
-
-                            <div>
-
-                                <h6>
-                                    Here's How To Get
-                                    Best Sleep At Night
-                                </h6>
-
-                                <small>
-                                    10 AUGUST
-                                </small>
-
-                            </div>
-
-                        </div>
+                        @endforeach
 
                     </div>
 
@@ -362,11 +431,11 @@
     </section>
 
     {{-- latest post section  --}}
-    <section class="pb-5">
+    <section class="pb-5 latest_section">
 
         <div class="container">
 
-            <div class="row">
+            <div class="row mt-5">
 
                 <div class="col-lg-8">
 
@@ -374,113 +443,149 @@
                         LATEST POSTS
                     </h5>
 
-                    @for ($i = 1; $i <= 4; $i++)
-                        <div class="latest-post">
+                    @foreach ($latestPosts as $post)
+                        <div class="latest-post-item">
 
-                            <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=1000">
+                            <div class="row align-items-center">
 
-                            <div>
+                                <div class="col-md-3">
 
-                                <span class="post-category">
-                                    Food
-                                </span>
+                                    <a href="{{ route('frontend.post.show', $post->slug) }}">
 
-                                <h5>
-                                    Helpful Tips for Working
-                                    from Home as a Freelancer
-                                </h5>
+                                        <img src="{{ asset('storage/' . $post->thumbnail) }}" class="latest-post-image">
 
-                                <p class="text-muted">
+                                    </a>
 
-                                    7 AUGUST • 3 MIN READ
+                                </div>
 
-                                </p>
+                                <div class="col-md-9">
 
-                            </div>
+                                    <span class="post-category">
 
-                        </div>
-                    @endfor
+                                        {{ $post->category->name }}
 
-                    <nav>
+                                    </span>
 
-                        <ul class="pagination">
+                                    <h4 class="latest-post-title">
 
-                            <li class="page-item active">
-                                <a class="page-link" href="#">
-                                    01
-                                </a>
-                            </li>
+                                        <a href="{{ route('frontend.post.show', $post->slug) }}">
 
-                            <li class="page-item">
-                                <a class="page-link" href="#">
-                                    02
-                                </a>
-                            </li>
+                                            {{ $post->title }}
 
-                            <li class="page-item">
-                                <a class="page-link" href="#">
-                                    03
-                                </a>
-                            </li>
+                                        </a>
 
-                        </ul>
+                                    </h4>
 
-                    </nav>
+                                    <div class="post-meta">
 
-                </div>
-                <div class="col-lg-4">
+                                        {{ $post->created_at->format('d M Y') }}
 
-                    <h5 class="section-title">
-                        LAST COMMENTS
-                    </h5>
+                                        .
 
-                    @for ($i = 1; $i <= 3; $i++)
-                        <div class="comment-box">
+                                        {{ $post->reading_time }} min read
 
-                            <div class="d-flex">
+                                        .
 
-                                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=600">
+                                        {{ $post->formatted_views }} Views
 
-                                <div class="ms-3">
-
-                                    <h6>
-                                        David
-                                    </h6>
-
-                                    <p class="small text-muted">
-
-                                        A writer is someone for
-                                        whom writing is difficult.
-
-                                    </p>
+                                    </div>
 
                                 </div>
 
                             </div>
 
                         </div>
-                    @endfor
+                    @endforeach
 
-                    <h5 class="section-title mt-5">
-                        INSTAGRAM
-                    </h5>
+                </div>
 
-                    <div class="instagram-grid">
+                <div class="col-lg-4">
 
-                        <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=600">
+                    <div class="sidebar-widget">
 
-                        <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=600">
+                        <h5 class="mb-4">
+                            LATEST COMMENTS
+                        </h5>
 
-                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600">
+                        @forelse($latestComments as $comment)
+                            <div class="small-post mb-3">
 
-                        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=600">
+                                <div>
 
-                        <img src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?q=80&w=600">
+                                    <strong>
 
-                        <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=600">
+                                        <span class="text-capitalize">
+                                            {{ $comment->name }}
+                                        </span>
+
+                                        .
+
+                                        <span class="text-secondary">
+                                            {{ $comment->created_at->format('d M Y') }}
+                                        </span>
+
+                                    </strong>
+
+                                    <p class="mb-1 small">
+
+                                        {{ \Illuminate\Support\Str::limit($comment->comment, 60) }}
+
+                                    </p>
+
+                                    <small class="text-muted">
+
+                                        on
+
+                                        <a href="{{ route('frontend.post.show', $comment->post->slug) }}">
+
+                                            {{ \Illuminate\Support\Str::limit($comment->post->title, 30) }}
+
+                                        </a>
+
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                            <hr>
+
+                        @empty
+
+                            <p class="text-muted">
+
+                                No comments yet
+
+                            </p>
+                        @endforelse
 
                     </div>
 
+
+                    <div class="sidebar-widget">
+
+                        <h5 class="mb-4">
+                            INSTAGRAM
+                        </h5>
+
+                        <div class="instagram-gallery">
+
+                            <div class="row g-2">
+
+                                @foreach ($galleryImages as $image)
+                                    <div class="col-4">
+
+                                        <img src="{{ asset('storage/' . $image->image) }}" class="img-fluid rounded"
+                                            alt="Instagram Gallery">
+
+                                    </div>
+                                @endforeach
+
+                            </div>
+
+                        </div>
+
+                    </div>
                 </div>
 
             </div>
@@ -490,7 +595,7 @@
     </section>
 
     {{-- destination section  --}}
-    <section class="py-5 bg-white">
+    <section class="dastination_section  py-5 bg-white">
 
         <div class="container">
 
@@ -502,26 +607,29 @@
                         DESTINATIONS
                     </h5>
 
-                    @for ($i = 1; $i <= 4; $i++)
-                        <div class="footer-post">
+                    @foreach ($destinationPosts as $post)
+                        <div class="small-post">
 
-                            <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=600">
+                            <img src="{{ asset('storage/' . $post->thumbnail) }}" alt="{{ $post->title }}">
 
                             <div>
 
-                                <h6>
-                                    The Best Time To Travel
-                                    To Cambodia
-                                </h6>
+                                <a href="{{ route('frontend.post.show', $post->slug) }}">
+
+                                    {{ $post->title }}
+
+                                </a>
 
                                 <small>
-                                    7 AUGUST
+
+                                    {{ $post->created_at->format('d M Y') }}
+
                                 </small>
 
                             </div>
 
                         </div>
-                    @endfor
+                    @endforeach
 
                 </div>
 
@@ -531,26 +639,29 @@
                         LIFESTYLE
                     </h5>
 
-                    @for ($i = 1; $i <= 4; $i++)
-                        <div class="footer-post">
+                    @foreach ($lifestylePosts as $post)
+                        <div class="small-post">
 
-                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600">
+                            <img src="{{ asset('storage/' . $post->thumbnail) }}" alt="{{ $post->title }}">
 
                             <div>
 
-                                <h6>
-                                    10 Ways To De-Stress
-                                    Your Day
-                                </h6>
+                                <a href="{{ route('frontend.post.show', $post->slug) }}">
+
+                                    {{ $post->title }}
+
+                                </a>
 
                                 <small>
-                                    11 AUGUST
+
+                                    {{ $post->created_at->format('d M Y') }}
+
                                 </small>
 
                             </div>
 
                         </div>
-                    @endfor
+                    @endforeach
 
                 </div>
 
@@ -560,26 +671,29 @@
                         PHOTOGRAPHY
                     </h5>
 
-                    @for ($i = 1; $i <= 4; $i++)
-                        <div class="footer-post">
+                    @foreach ($photographyPosts as $post)
+                        <div class="small-post">
 
-                            <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=600">
+                            <img src="{{ asset('storage/' . $post->thumbnail) }}" alt="{{ $post->title }}">
 
                             <div>
 
-                                <h6>
-                                    Which Preset Pack Is
-                                    Right For You
-                                </h6>
+                                <a href="{{ route('frontend.post.show', $post->slug) }}">
+
+                                    {{ $post->title }}
+
+                                </a>
 
                                 <small>
-                                    12 AUGUST
+
+                                    {{ $post->created_at->format('d M Y') }}
+
                                 </small>
 
                             </div>
 
                         </div>
-                    @endfor
+                    @endforeach
 
                 </div>
 
@@ -590,7 +704,7 @@
     </section>
 
     {{-- categories section  --}}
-    <section class="py-5">
+    <section class="categories_section py-5">
 
         <div class="container">
 
@@ -600,51 +714,106 @@
 
             <div class="row g-4">
 
-                <div class="col-lg-4">
+                <div class="categorySlider owl-carousel owl-theme">
 
-                    <div class="sidebar-widget">
+                    @foreach ($categories as $category)
+                        <div class="item">
 
-                        <h5>Foody</h5>
+                            <div class="post-card text-center">
 
-                        <p class="mb-0">
-                            Lorem ipsum dolor sit amet.
-                        </p>
+                                <a href="{{ route('frontend.category.show', $category->slug) }}">
 
-                    </div>
+                                    <img class="post-image-sm" src="{{ asset('storage/' . $category->image) }}"
+                                        alt="{{ $category->name }}">
 
-                </div>
+                                </a>
 
-                <div class="col-lg-4">
+                                <div class="post-content">
 
-                    <div class="sidebar-widget">
+                                    <h5>
 
-                        <h5>Entertainment</h5>
+                                        <a href="{{ route('frontend.category.show', $category->slug) }}">
 
-                        <p class="mb-0">
-                            Lorem ipsum dolor sit amet.
-                        </p>
+                                            {{ $category->name }}
 
-                    </div>
+                                        </a>
 
-                </div>
+                                    </h5>
 
-                <div class="col-lg-4">
+                                    <small>
 
-                    <div class="sidebar-widget">
+                                        {{ $category->posts()->count() }}
+                                        Posts
 
-                        <h5>Travel Tips</h5>
+                                    </small>
 
-                        <p class="mb-0">
-                            Lorem ipsum dolor sit amet.
-                        </p>
+                                </div>
 
-                    </div>
+                            </div>
+
+                        </div>
+                    @endforeach
 
                 </div>
 
             </div>
-
         </div>
 
     </section>
 @endsection
+
+@push('scripts')
+    <script>
+        $('.categorySlider').owlCarousel({
+            loop: true,
+            margin: 10,
+            nav: false,
+            dots: false,
+            autoplay: true,
+            autoplayTimeout: 3000,
+            responsive: {
+                0: {
+                    items: 1
+                },
+                576: {
+                    items: 2
+                },
+                768: {
+                    items: 3
+                },
+                992: {
+                    items: 5
+                }
+            }
+        });
+    </script>
+@endpush
+@push('scripts')
+    <script>
+        $('.featuresdSlider').owlCarousel({
+
+            items: 1,
+
+            loop: true,
+
+            autoplay: true,
+
+            autoplayTimeout: 4000,
+
+            smartSpeed: 1000,
+
+            animateOut: 'fadeOut',
+
+            animateIn: 'fadeIn',
+
+            mouseDrag: false,
+
+            touchDrag: true,
+
+            nav: false,
+
+            dots: false
+
+        });
+    </script>
+@endpush

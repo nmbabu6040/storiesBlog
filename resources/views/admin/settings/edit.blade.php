@@ -1,0 +1,199 @@
+@extends('admin.layouts.master')
+
+@section('title', 'Settings')
+
+@section('content')
+
+    <h3 class="mb-4">
+        Website Settings
+    </h3>
+
+    @if (session('success'))
+        <div class="alert alert-success">
+
+            {{ session('success') }}
+
+        </div>
+    @endif
+
+    <form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data">
+
+        @csrf
+
+        <div class="card">
+
+            <div class="card-body">
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Site Name
+                    </label>
+
+                    <input type="text" name="site_name" class="form-control" value="{{ $setting->site_name ?? '' }}">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Header Logo
+                    </label>
+
+                    <input type="file" name="header_logo" class="form-control">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Footer Logo
+                    </label>
+
+                    <input type="file" name="footer_logo" class="form-control">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Favicon
+                    </label>
+
+                    <input type="file" name="favicon" class="form-control">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Author Name
+                    </label>
+
+                    <input type="text" name="author_name" class="form-control" value="{{ $setting->author_name ?? '' }}">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Author Image
+                    </label>
+
+                    <input type="file" name="author_image" class="form-control">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Author Description
+                    </label>
+
+                    <textarea name="author_description" rows="4" class="form-control">{{ $setting->author_description ?? '' }}</textarea>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Hero Title
+
+                    </label>
+
+                    <input type="text" name="hero_title" class="form-control"
+                        value="{{ old('hero_title', $setting->hero_title) }}">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Hero Subtitle
+
+                    </label>
+
+                    <textarea name="hero_subtitle" rows="3" class="form-control">{{ old('hero_subtitle', $setting->hero_subtitle) }}</textarea>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Hero Animated Text
+
+                    </label>
+
+                    <input type="text" name="hero_type_text" class="form-control"
+                        placeholder="Travel Blogger,Content Writer,Food Guide"
+                        value="{{ old('hero_type_text', $setting->hero_type_text) }}">
+
+                    <small class="text-muted">
+
+                        Separate values with commas (,)
+
+                    </small>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Hero Image
+                    </label>
+
+                    <input type="file" name="hero_image" class="form-control">
+
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Facebook URL
+                    </label>
+
+                    <input type="text" name="facebook_url" class="form-control"
+                        value="{{ $setting->facebook_url ?? '' }}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Instagram URL
+                    </label>
+
+                    <input type="text" name="instagram_url" class="form-control"
+                        value="{{ $setting->instagram_url ?? '' }}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        YouTube URL
+                    </label>
+
+                    <input type="text" name="youtube_url" class="form-control"
+                        value="{{ $setting->youtube_url ?? '' }}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Copyright Text
+                    </label>
+
+                    <textarea name="copyright_text" class="form-control" rows="3">{{ $setting->copyright_text ?? '' }}</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+
+                    Save Settings
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+@endsection

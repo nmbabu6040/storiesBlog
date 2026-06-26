@@ -6,17 +6,45 @@
 
             <div class="col-lg-3">
 
-                <h5 class="footer-title">
-                    ABOUT ME
-                </h5>
+                <a href=" {{ route('frontend.home') }}" class="logo">
+                    @if (!empty($siteSetting->footer_logo))
+                        <img src="{{ asset('storage/' . $siteSetting->footer_logo) }}" alt="Footer Logo" height="50">
+                    @endif
+                </a>
 
-                <p>
+                <p class="mt-3">
 
                     Start writing, no matter what.
                     The water does not flow until
                     the faucet is turned on.
 
                 </p>
+
+                <div class="social-links">
+
+                    <span>Follow Us:</span>
+
+                    <div class="d-flex gap-3 mt-3">
+                        @if ($siteSetting?->facebook_url)
+                            <a href="{{ $siteSetting->facebook_url }}" target="_blank">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+                        @endif
+
+                        @if ($siteSetting?->instagram_url)
+                            <a href="{{ $siteSetting->instagram_url }}" target="_blank">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+                        @endif
+
+                        @if ($siteSetting?->youtube_url)
+                            <a href="{{ $siteSetting->youtube_url }}" target="_blank">
+                                <i class="fa-brands fa-youtube"></i>
+                            </a>
+                        @endif
+                    </div>
+
+                </div>
 
             </div>
 
@@ -28,21 +56,15 @@
 
                 <div class="footer-links">
 
-                    <a href="#">
-                        About
-                    </a>
+                    <a href="{{ route('frontend.about') }}">About</a>
 
-                    <a href="#">
-                        Help
-                    </a>
+                    <a href="{{ route('frontend.contact') }}">Contact</a>
 
-                    <a href="#">
-                        Privacy Policy
-                    </a>
+                    <a href="{{ route('frontend.privacy') }}">Privacy Policy</a>
 
-                    <a href="#">
-                        Contact
-                    </a>
+                    <a href="{{ route('frontend.terms') }}">Terms & Conditions</a>
+
+                    <a href="{{ route('frontend.disclaimer') }}">Disclaimer</a>
 
                 </div>
 
@@ -56,21 +78,14 @@
 
                 <div class="d-flex flex-wrap gap-2">
 
-                    <span class="badge bg-light text-dark">
-                        Travel
-                    </span>
+                    @foreach ($footerCategories as $category)
+                        <a href="{{ route('frontend.category.show', $category->slug) }}"
+                            class="tag btn btn-outline-primary">
 
-                    <span class="badge bg-light text-dark">
-                        Food
-                    </span>
+                            {{ $category->name }}
 
-                    <span class="badge bg-light text-dark">
-                        Lifestyle
-                    </span>
-
-                    <span class="badge bg-light text-dark">
-                        Photography
-                    </span>
+                        </a>
+                    @endforeach
 
                 </div>
 
@@ -82,22 +97,32 @@
                     NEWSLETTER
                 </h5>
 
-                <form>
+                <div class="sidebar-widget">
 
-                    <div class="input-group">
+                    @if (session('subscribe_success'))
+                        <div class="alert alert-success">
 
-                        <input type="email" class="form-control" placeholder="Email">
+                            {{ session('subscribe_success') }}
 
-                        <button class="btn btn-primary">
+                        </div>
+                    @endif
+
+                    <form action="{{ route('frontend.subscribe') }}" method="POST">
+
+                        @csrf
+
+                        <input type="email" name="email" class="form-control mb-3" placeholder="Email Address"
+                            required>
+
+                        <button type="submit" class="btn btn-dark w-100">
 
                             Subscribe
 
                         </button>
 
-                    </div>
+                    </form>
 
-                </form>
-
+                </div>
             </div>
 
         </div>
@@ -106,7 +131,7 @@
 
         <div class="text-center">
 
-            © {{ date('Y') }} Stories Blog
+            {{ $siteSetting->copyright_text }}
 
         </div>
 

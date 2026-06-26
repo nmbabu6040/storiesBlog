@@ -1,47 +1,125 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<!DOCTYPE html>
+<html lang="en">
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+    <style>
+        body {
+            background: #f4f6f9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+        .login-card {
+            width: 100%;
+            max-width: 450px;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+        }
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+        .brand {
+            font-size: 32px;
+            font-weight: 700;
+        }
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+        .brand span {
+            color: #5f6fff;
+        }
+    </style>
+</head>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
+<body>
+
+    <div class="card login-card">
+
+        <div class="card-body p-5">
+
+            <div class="text-center mb-4">
+
+                <h2 class="brand">
+                    stor<span>ies.</span>
+                </h2>
+
+                <p class="text-muted">
+                    Admin Login
+                </p>
+
+            </div>
+
+            @if (session('status'))
+                <div class="alert alert-success">
+                    {{ session('status') }}
+                </div>
             @endif
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
+            <form method="POST" action="{{ route('login') }}">
+
+                @csrf
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Email
+                    </label>
+
+                    <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
+
+                    @error('email')
+                        <small class="text-danger">
+                            {{ $message }}
+                        </small>
+                    @enderror
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Password
+                    </label>
+
+                    <input type="password" name="password" class="form-control" required>
+
+                    @error('password')
+                        <small class="text-danger">
+                            {{ $message }}
+                        </small>
+                    @enderror
+
+                </div>
+
+                <div class="form-check mb-4">
+
+                    <input class="form-check-input" type="checkbox" name="remember" id="remember">
+
+                    <label class="form-check-label" for="remember">
+
+                        Remember Me
+
+                    </label>
+
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">
+
+                    Login
+
+                </button>
+
+            </form>
+
         </div>
-    </form>
-</x-guest-layout>
+
+    </div>
+
+</body>
+
+</html>

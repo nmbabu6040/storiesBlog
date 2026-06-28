@@ -177,6 +177,116 @@
                 </div>
 
                 <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Footer Column 1 Title
+
+                    </label>
+
+                    <input type="text" class="form-control" name="footer_title_1"
+                        value="{{ old('footer_title_1', $setting->footer_title_1) }}">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Footer Column 2 Title
+
+                    </label>
+
+                    <input type="text" class="form-control" name="footer_title_2"
+                        value="{{ old('footer_title_2', $setting->footer_title_2) }}">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Footer Column 3 Title
+
+                    </label>
+
+                    <input type="text" class="form-control" name="footer_title_3"
+                        value="{{ old('footer_title_3', $setting->footer_title_3) }}">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Footer Column 4 Title
+
+                    </label>
+
+                    <input type="text" class="form-control" name="footer_title_4"
+                        value="{{ old('footer_title_4', $setting->footer_title_4) }}">
+
+                </div>
+
+                <hr>
+
+                <h4 class="mb-3">
+
+                    Contact Information
+
+                </h4>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Phone
+
+                    </label>
+
+                    <input type="text" name="phone" class="form-control"
+                        value="{{ old('phone', $setting->phone) }}">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Email
+
+                    </label>
+
+                    <input type="email" name="email" class="form-control"
+                        value="{{ old('email', $setting->email) }}">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Address
+
+                    </label>
+
+                    <textarea name="address" rows="3" class="form-control">{{ old('address', $setting->address) }}</textarea>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Google Map (Embed iframe)
+
+                    </label>
+
+                    <textarea name="google_map" rows="6" class="form-control">{{ old('google_map', $setting->google_map) }}</textarea>
+
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label">
                         Copyright Text
                     </label>

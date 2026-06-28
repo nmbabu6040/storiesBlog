@@ -53,6 +53,22 @@ class SettingController extends Controller
 
             'author_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
 
+            'footer_title_1' => 'nullable|string|max:255',
+
+            'footer_title_2' => 'nullable|string|max:255',
+
+            'footer_title_3' => 'nullable|string|max:255',
+
+            'footer_title_4' => 'nullable|string|max:255',
+
+            'phone' => 'nullable|string|max:50',
+
+            'email' => 'nullable|email|max:255',
+
+            'address' => 'nullable|string',
+
+            'google_map' => 'nullable|string',
+
         ]);
 
         $setting = Setting::first();
@@ -77,7 +93,23 @@ class SettingController extends Controller
 
             'youtube_url',
 
-            'copyright_text'
+            'copyright_text',
+
+            'footer_title_1',
+
+            'footer_title_2',
+
+            'footer_title_3',
+
+            'footer_title_4',
+
+            'phone',
+
+            'email',
+
+            'address',
+
+            'google_map',
 
         ]);
 

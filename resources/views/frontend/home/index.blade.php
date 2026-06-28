@@ -595,7 +595,7 @@
     </section>
 
     {{-- destination section  --}}
-    <section class="dastination_section  py-5 bg-white">
+    {{-- <section class="dastination_section  py-5 bg-white">
 
         <div class="container">
 
@@ -620,11 +620,19 @@
 
                                 </a>
 
-                                <small>
+                                <div class="post-meta">
 
                                     {{ $post->created_at->format('d M Y') }}
 
-                                </small>
+                                    .
+
+                                    {{ $post->reading_time }} min read
+
+                                    .
+
+                                    {{ $post->formatted_views }} Views
+
+                                </div>
 
                             </div>
 
@@ -652,11 +660,19 @@
 
                                 </a>
 
-                                <small>
+                                <div class="post-meta">
 
                                     {{ $post->created_at->format('d M Y') }}
 
-                                </small>
+                                    .
+
+                                    {{ $post->reading_time }} min read
+
+                                    .
+
+                                    {{ $post->formatted_views }} Views
+
+                                </div>
 
                             </div>
 
@@ -684,11 +700,19 @@
 
                                 </a>
 
-                                <small>
+                                <div class="post-meta">
 
                                     {{ $post->created_at->format('d M Y') }}
 
-                                </small>
+                                    .
+
+                                    {{ $post->reading_time }} min read
+
+                                    .
+
+                                    {{ $post->formatted_views }} Views
+
+                                </div>
 
                             </div>
 
@@ -701,10 +725,11 @@
 
         </div>
 
-    </section>
+    </section> --}}
+    @include('frontend.partials.destination-section')
 
     {{-- categories section  --}}
-    <section class="categories_section py-5">
+    {{-- <section class="categories_section py-5">
 
         <div class="container">
 
@@ -759,10 +784,12 @@
             </div>
         </div>
 
-    </section>
+    </section> --}}
+
+    @include('frontend.partials.category-slider')
 @endsection
 
-@push('scripts')
+{{-- @push('scripts')
     <script>
         $('.categorySlider').owlCarousel({
             loop: true,
@@ -787,7 +814,7 @@
             }
         });
     </script>
-@endpush
+@endpush --}}
 @push('scripts')
     <script>
         $('.featuresdSlider').owlCarousel({

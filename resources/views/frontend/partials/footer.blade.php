@@ -51,38 +51,17 @@
             <div class="col-lg-3">
 
                 <h5 class="footer-title">
-                    QUICK LINKS
+
+                    {{ $siteSetting->footer_title_1 ?: 'Quick Links' }}
+
                 </h5>
 
                 <div class="footer-links">
 
-                    <a href="{{ route('frontend.about') }}">About</a>
+                    @foreach ($footerMenus->where('menu_location', 'footer_1') as $menu)
+                        <a href="{{ $menu->link }}" target="{{ $menu->target }}">
 
-                    <a href="{{ route('frontend.contact') }}">Contact</a>
-
-                    <a href="{{ route('frontend.privacy') }}">Privacy Policy</a>
-
-                    <a href="{{ route('frontend.terms') }}">Terms & Conditions</a>
-
-                    <a href="{{ route('frontend.disclaimer') }}">Disclaimer</a>
-
-                </div>
-
-            </div>
-
-            <div class="col-lg-3">
-
-                <h5 class="footer-title">
-                    TAG CLOUD
-                </h5>
-
-                <div class="d-flex flex-wrap gap-2">
-
-                    @foreach ($footerCategories as $category)
-                        <a href="{{ route('frontend.category.show', $category->slug) }}"
-                            class="tag btn btn-outline-primary">
-
-                            {{ $category->name }}
+                            {{ $menu->name }}
 
                         </a>
                     @endforeach
@@ -94,7 +73,29 @@
             <div class="col-lg-3">
 
                 <h5 class="footer-title">
-                    NEWSLETTER
+
+                    {{ $siteSetting->footer_title_2 ?: 'Resources' }}
+
+                </h5>
+
+                <div class="footer-links">
+
+                    @foreach ($footerMenus->where('menu_location', 'footer_2') as $menu)
+                        <a href="{{ $menu->link }}" target="{{ $menu->target }}">
+
+                            {{ $menu->name }}
+
+                        </a>
+                    @endforeach
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3">
+
+                <h5 class="footer-title">
+                    {{ $siteSetting->footer_title_3 ?: 'Newsletter' }}
                 </h5>
 
                 <div class="sidebar-widget">
@@ -131,7 +132,7 @@
 
         <div class="text-center">
 
-            {{ $siteSetting->copyright_text }}
+            {!! $siteSetting->copyright_text !!}
 
         </div>
 

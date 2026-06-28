@@ -4,3 +4,63 @@
 @import "./frontend/post.css";
 @import "./frontend/common.css";
 @import "./frontend/header.css";
+
+/* ===========================
+   Navbar Dropdown
+=========================== */
+
+.navbar .dropdown-menu {
+    display: block;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: all 0.3s ease;
+    margin-top: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    min-width: 220px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Hover Show */
+
+@media (min-width: 992px) {
+    .navbar .dropdown:hover > .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+}
+
+/* Click Show (Mobile + Bootstrap) */
+
+.navbar .dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Dropdown Item */
+
+.navbar .dropdown-item {
+    padding: 14px 20px;
+    transition: 0.25s;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+/* Hover */
+
+.navbar .dropdown-item:hover,
+.navbar .dropdown-item:focus {
+    background: #0d6efd;
+    color: #fff;
+}
+
+/* Remove active blue border */
+
+.navbar .dropdown-toggle::after {
+    margin-left: 8px;
+}

@@ -38,5 +38,18 @@ class Setting extends Model
 
         'hero_image',
 
+        'footer_title_1',
+
+        'footer_title_2',
+
+        'footer_title_3',
+
+        'footer_title_4',
+
+        'phone',
+        'email',
+        'address',
+        'google_map',
+
     ];
 }

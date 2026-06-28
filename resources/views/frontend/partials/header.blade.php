@@ -42,7 +42,7 @@
 
         <div class="container">
 
-            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#mainMenu">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainMenu">
 
                 <span class="navbar-toggler-icon"></span>
 
@@ -52,55 +52,53 @@
 
                 <ul class="navbar-nav me-auto">
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            Home
-                        </a>
-                    </li>
+                    @foreach ($menus as $menu)
+                        @if ($menu->children->count())
+                            <li class="nav-item dropdown">
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            Travel
-                        </a>
-                    </li>
+                                <a class="nav-link dropdown-toggle" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            Mega Menu
-                        </a>
-                    </li>
+                                    {{ $menu->name }}
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            Guides
-                        </a>
-                    </li>
+                                </a>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            Food
-                        </a>
-                    </li>
+                                <ul class="dropdown-menu">
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            Hotels
-                        </a>
-                    </li>
+                                    @foreach ($menu->children as $child)
+                                        <li>
+                                            <a class="dropdown-item" href="{{ $child->link }}"
+                                                target="{{ $child->target }}">
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            Reviews
-                        </a>
-                    </li>
+                                                {{ $child->name }}
+
+                                            </a>
+                                        </li>
+                                    @endforeach
+
+                                </ul>
+
+                            </li>
+                        @else
+                            <li class="nav-item">
+
+                                <a class="nav-link" href="{{ $menu->link }}" target="{{ $menu->target }}">
+
+                                    {{ $menu->name }}
+
+                                </a>
+
+                            </li>
+                        @endif
+                    @endforeach
 
                 </ul>
 
                 <form action="{{ route('frontend.search') }}" method="GET" class="d-flex">
 
-                    <input type="text" name="keyword" class="form-control me-2" placeholder="Search">
+                    <input type="text" name="keyword" class="form-control me-2" placeholder="Search...">
 
-                    <button class="btn btn-primary">
+                    <button class="btn btn-primary" type="submit">
 
                         Search
 

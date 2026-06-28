@@ -63,11 +63,6 @@
     border-radius: 0 40px 40px 0;
 }
 
-.hero-section {
-    font-family: "Crimson Text", serif;
-    font-family: "Noto Sans JP", sans-serif;
-}
-
 .hero-section h2 {
     font-size: 50px;
     font-weight: 900;
@@ -77,8 +72,4 @@
 
 .hero-section h2 span {
     color: #5869da;
-}
-
-.body {
-    font-family: "Noto Sans JP", sans-serif;
 }

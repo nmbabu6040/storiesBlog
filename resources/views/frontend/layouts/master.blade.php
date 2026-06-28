@@ -8,10 +8,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>
-        @yield('title', $siteSetting->site_name ?? 'Stories Blog')
+
+        @yield('title', $siteSetting->site_name)
+
     </title>
 
-    <meta name="description" content="@yield('meta_description', 'Latest news, guides and blog articles')">
+    <meta name="description" content="@yield('meta_description', $siteSetting->site_description)">
 
     @if (!empty($siteSetting->favicon))
         <link rel="icon" href="{{ asset('storage/' . $siteSetting->favicon) }}">

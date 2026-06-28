@@ -42,9 +42,7 @@
     height: 90px;
     object-fit: cover;
 }
-.footer-main {
-    font-family: "Noto Sans JP", sans-serif;
-}
+
 .footer-post {
     display: flex;
     gap: 15px;
@@ -82,17 +80,13 @@
 
 .footer-section h5 {
     font-size: 13px;
-
     text-transform: uppercase;
-
     font-weight: 700;
-
     margin-bottom: 20px;
 }
 
 .footer-section ul {
     list-style: none;
-
     padding: 0;
 }
 
@@ -108,8 +102,4 @@
     color: #fff;
     text-align: center;
     line-height: 30px;
-}
-
-body {
-    font-family: "Noto Sans JP", sans-serif;
 }

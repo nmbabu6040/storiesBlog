@@ -7,13 +7,35 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>
-
-        @yield('title', $siteSetting->site_name)
-
-    </title>
+    <title>@yield('title', $siteSetting->site_name)</title>
 
     <meta name="description" content="@yield('meta_description', $siteSetting->site_description)">
+
+    <meta name="keywords" content="@yield('meta_keywords', $siteSetting->meta_keywords)">
+
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <meta property="og:title" content="@yield('title', $siteSetting->site_name)">
+
+    <meta property="og:description" content="@yield('meta_description', $siteSetting->site_description ?? '')">
+
+    <meta property="og:url" content="{{ url()->current() }}">
+
+    <meta property="og:type" content="website">
+
+    <meta property="og:image"
+        content="{{ !empty($siteSetting->header_logo) ? asset('storage/' . $siteSetting->header_logo) : asset('images/default-og.jpg') }}">
+
+    <meta name="twitter:card" content="summary_large_image">
+
+    <meta name="twitter:title" content="@yield('title', $siteSetting->site_name)">
+
+    <meta name="twitter:description" content="@yield('meta_description', $siteSetting->site_description ?? '')">
+
+    <meta name="twitter:image"
+        content="{{ !empty($siteSetting->header_logo) ? asset('storage/' . $siteSetting->header_logo) : asset('images/default-og.jpg') }}">
+
+
 
     @if (!empty($siteSetting->favicon))
         <link rel="icon" href="{{ asset('storage/' . $siteSetting->favicon) }}">

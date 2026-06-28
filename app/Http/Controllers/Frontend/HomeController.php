@@ -15,6 +15,8 @@ class HomeController extends Controller
 {
     public function index()
     {
+        $setting = Setting::first();
+
         $featuredPosts = Post::with('category')
             ->where('status', 1)
             ->where('featured', 1)
@@ -40,25 +42,37 @@ class HomeController extends Controller
 
         $travelPosts = Post::with('category')
             ->where('status', 1)
+            ->when($setting?->travel_category_id, function ($query) use ($setting) {
+                $query->where('category_id', $setting->travel_category_id);
+            })
             ->latest()
-            ->skip(3)
             ->take(4)
             ->get();
 
-        $destinationPosts = Post::where('status', 1)
+        $destinationPosts = Post::with('category')
+            ->where('status', 1)
+            ->when($setting?->destination_category_id, function ($query) use ($setting) {
+                $query->where('category_id', $setting->destination_category_id);
+            })
             ->latest()
             ->take(3)
             ->get();
 
-        $lifestylePosts = Post::where('status', 1)
+        $lifestylePosts = Post::with('category')
+            ->where('status', 1)
+            ->when($setting?->lifestyle_category_id, function ($query) use ($setting) {
+                $query->where('category_id', $setting->lifestyle_category_id);
+            })
             ->latest()
-            ->skip(3)
             ->take(3)
             ->get();
 
-        $photographyPosts = Post::where('status', 1)
+        $photographyPosts = Post::with('category')
+            ->where('status', 1)
+            ->when($setting?->photography_category_id, function ($query) use ($setting) {
+                $query->where('category_id', $setting->photography_category_id);
+            })
             ->latest()
-            ->skip(6)
             ->take(3)
             ->get();
 
@@ -72,8 +86,6 @@ class HomeController extends Controller
             ->latest()
             ->take(4)
             ->get();
-
-        $setting = Setting::first();
 
         $heroTypes = array_filter(
             array_map(

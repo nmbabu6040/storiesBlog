@@ -2,7 +2,9 @@
 
 @section('title', $category->name)
 
-@section('meta_description', 'Browse all posts from ' . $category->name)
+@section('meta_description', $category->description)
+
+@section('meta_keywords', $category->meta_keywords)
 
 @section('content')
     <div class="container py-5">

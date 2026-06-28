@@ -2,7 +2,9 @@
 
 @section('title', $post->meta_title ?: $post->title)
 
-@section('meta_description', $post->meta_description ?: $post->title)
+@section('meta_description', $post->meta_description)
+
+@section('meta_keywords', $post->meta_keywords)
 
 @section('content')
 

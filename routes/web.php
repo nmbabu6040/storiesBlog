@@ -48,15 +48,11 @@ Route::name('frontend.')->group(function () {
     Route::get('/post/{slug}', [HomeController::class, 'show'])->name('post.show');
     Route::get('/category/{slug}', [HomeController::class, 'category'])->name('category.show');
     Route::get('/search', [HomeController::class, 'search'])->name('search');
-    // Route::view('/about-us', 'frontend.pages.about')->name('about');
-    // Route::view('/contact-us', 'frontend.pages.contact')->name('contact');
-    // Route::view('/privacy-policy', 'frontend.pages.privacy')->name('privacy');
-    // Route::view('/disclaimer', 'frontend.pages.disclaimer')->name('disclaimer');
-    // Route::view('/terms-conditions', 'frontend.pages.terms')->name('terms');
     Route::post('/contact-submit', [ContactController::class, 'store'])->name('contact.submit');
     Route::post('/subscribe', [SubscriberController::class, 'store'])->name('subscribe');
     Route::post('/comment-submit', [CommentController::class, 'store'])->name('comment.store');
     Route::get('/{slug}', [FrontendPageController::class, 'show'])
+        ->where('slug', '^(?!login|register|forgot-password|reset-password|verify-email|email|confirm-password|logout|profile|admin).*$')
         ->name('page');
 });
 

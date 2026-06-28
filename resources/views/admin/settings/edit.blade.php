@@ -37,6 +37,30 @@
                 <div class="mb-3">
 
                     <label class="form-label">
+
+                        Site Description
+
+                    </label>
+
+                    <textarea name="site_description" rows="3" class="form-control">{{ old('site_description', $setting->site_description) }}</textarea>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Default Meta Keywords
+
+                    </label>
+
+                    <textarea name="meta_keywords" rows="3" class="form-control" placeholder="blog, travel, lifestyle, news">{{ old('meta_keywords', $setting->meta_keywords) }}</textarea>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
                         Header Logo
                     </label>
 
@@ -147,6 +171,78 @@
 
                     <input type="file" name="hero_image" class="form-control">
 
+                </div>
+
+                <div class="mb-3">
+                    <label>Travel Category</label>
+
+                    <select name="travel_category_id" class="form-select">
+
+                        <option value="">Select Category</option>
+
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" @selected(old('travel_category_id', $setting->travel_category_id) == $category->id)>
+
+                                {{ $category->name }}
+
+                            </option>
+                        @endforeach
+
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label>Destination Category</label>
+
+                    <select name="destination_category_id" class="form-select">
+
+                        <option value="">Select Category</option>
+
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" @selected(old('destination_category_id', $setting->destination_category_id) == $category->id)>
+
+                                {{ $category->name }}
+
+                            </option>
+                        @endforeach
+
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label>Lifestyle Category</label>
+
+                    <select name="lifestyle_category_id" class="form-select">
+
+                        <option value="">Select Category</option>
+
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" @selected(old('lifestyle_category_id', $setting->lifestyle_category_id) == $category->id)>
+
+                                {{ $category->name }}
+
+                            </option>
+                        @endforeach
+
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label>Photography Category</label>
+
+                    <select name="photography_category_id" class="form-select">
+
+                        <option value="">Select Category</option>
+
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" @selected(old('photography_category_id', $setting->photography_category_id) == $category->id)>
+
+                                {{ $category->name }}
+
+                            </option>
+                        @endforeach
+
+                    </select>
                 </div>
 
                 <div class="mb-3">

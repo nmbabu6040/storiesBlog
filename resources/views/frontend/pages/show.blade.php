@@ -4,6 +4,8 @@
 
 @section('meta_description', $page->meta_description)
 
+@section('meta_keywords', $page->meta_keywords)
+
 @section('content')
 
     <section class="page-banner">

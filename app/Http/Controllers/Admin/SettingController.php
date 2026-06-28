@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -12,10 +13,12 @@ class SettingController extends Controller
     public function edit()
     {
         $setting = Setting::first();
-
+        $categories = Category::where('status', 1)
+            ->orderBy('name')
+            ->get();
         return view(
             'admin.settings.edit',
-            compact('setting')
+            compact('setting', 'categories')
         );
     }
 
@@ -69,6 +72,14 @@ class SettingController extends Controller
 
             'google_map' => 'nullable|string',
 
+            'travel_category_id' => 'nullable|exists:categories,id',
+            'destination_category_id' => 'nullable|exists:categories,id',
+            'lifestyle_category_id' => 'nullable|exists:categories,id',
+            'photography_category_id' => 'nullable|exists:categories,id',
+
+            'site_description' => 'nullable|string',
+            'meta_keywords' => 'nullable|string',
+
         ]);
 
         $setting = Setting::first();
@@ -110,6 +121,14 @@ class SettingController extends Controller
             'address',
 
             'google_map',
+
+            'travel_category_id',
+            'destination_category_id',
+            'lifestyle_category_id',
+            'photography_category_id',
+
+            'site_description',
+            'meta_keywords',
 
         ]);
 

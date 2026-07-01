@@ -1,31 +1,111 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
-    </div>
+<!DOCTYPE html>
+<html lang="en">
 
-    @if (session('status') == 'verification-link-sent')
-        <div class="mb-4 font-medium text-sm text-green-600">
-            {{ __('A new verification link has been sent to the email address you provided during registration.') }}
-        </div>
+@php
+    $siteSetting = \App\Models\Setting::first();
+@endphp
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $siteSetting->site_name }} | Login</title>
+
+    @if (!empty($siteSetting->favicon))
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . $siteSetting->favicon) }}">
     @endif
 
-    <div class="mt-4 flex items-center justify-between">
-        <form method="POST" action="{{ route('verification.send') }}">
-            @csrf
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-            <div>
-                <x-primary-button>
-                    {{ __('Resend Verification Email') }}
-                </x-primary-button>
+    <style>
+        body {
+            background: #f4f6f9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 500px;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+        }
+
+        .brand {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .brand span {
+            color: #5f6fff;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="card login-card">
+
+        <div class="card-body p-5">
+
+            <div class="text-center mb-4">
+
+                <h2 class="brand">
+                    stories<span>.</span>
+                </h2>
+
+                <p class="text-muted">
+                    Verify Your Email
+                </p>
+
             </div>
-        </form>
 
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
+            @if (session('status') == 'verification-link-sent')
+                <div class="alert alert-success">
 
-            <button type="submit" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                {{ __('Log Out') }}
-            </button>
-        </form>
+                    A new verification link has been sent to your email address.
+
+                </div>
+            @endif
+
+            <p class="text-muted">
+
+                Thanks for signing up! Before getting started, please verify your email address by clicking on the link
+                we emailed to you.
+
+            </p>
+
+            <form method="POST" action="{{ route('verification.send') }}">
+
+                @csrf
+
+                <button class="btn btn-primary w-100 mb-3">
+
+                    Resend Verification Email
+
+                </button>
+
+            </form>
+
+            <form method="POST" action="{{ route('logout') }}">
+
+                @csrf
+
+                <button class="btn btn-outline-secondary w-100">
+
+                    Logout
+
+                </button>
+
+            </form>
+
+        </div>
+
     </div>
-</x-guest-layout>
+
+</body>
+
+</html>

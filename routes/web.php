@@ -19,8 +19,18 @@ use App\Http\Controllers\Frontend\PageController as FrontendPageController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 
+// Route::get('/force-logout', function () {
+//     Auth::logout();
+
+//     request()->session()->invalidate();
+//     request()->session()->regenerateToken();
+
+//     return redirect('/');
+// });
 
 Route::get('/generate-sitemap', function () {
 
@@ -50,7 +60,9 @@ Route::name('frontend.')->group(function () {
     Route::get('/search', [HomeController::class, 'search'])->name('search');
     Route::post('/contact-submit', [ContactController::class, 'store'])->name('contact.submit');
     Route::post('/subscribe', [SubscriberController::class, 'store'])->name('subscribe');
-    Route::post('/comment-submit', [CommentController::class, 'store'])->name('comment.store');
+    Route::post('/comment-submit', [CommentController::class, 'store'])
+        ->middleware('auth')
+        ->name('comment.store');
     Route::get('/{slug}', [FrontendPageController::class, 'show'])
         ->where('slug', '^(?!login|register|forgot-password|reset-password|verify-email|email|confirm-password|logout|profile|admin).*$')
         ->name('page');
@@ -83,6 +95,7 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     )->name('comments.destroy');
     Route::resource('menus', MenuController::class);
     Route::resource('pages', AdminPageController::class);
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
 });
 
 
@@ -92,5 +105,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-
+Route::prefix('admin')->middleware(['auth', 'role:Super Admin|Admin'])->name('admin.')->group(function () {
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class)
+        ->middleware('role:Super Admin');
+    Route::resource('settings', SettingController::class)
+        ->middleware('role:Super Admin');
+    Route::resource('posts', PostController::class)
+        ->middleware('role:Super Admin|Admin|Editor|Author');
+});
 require __DIR__ . '/auth.php';

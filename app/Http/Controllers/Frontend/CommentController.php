@@ -14,31 +14,42 @@ class CommentController extends Controller
 
             'post_id' => 'required|exists:posts,id',
 
-            'name' => 'required|max:255',
-
-            'email' => 'required|email',
-
-            'comment' => 'required'
+            'comment' => 'required|string|max:2000'
 
         ]);
+
+        $user = $request->user();
+
+        $exists = Comment::where('post_id', $request->post_id)
+            ->where('email', $user->email)
+            ->where('comment', $request->comment)
+            ->where('created_at', '>=', now()->subMinute())
+            ->exists();
+
+        if ($exists) {
+            return back()->with(
+                'error',
+                'You have already submitted this comment.'
+            );
+        }
 
         Comment::create([
 
             'post_id' => $request->post_id,
 
-            'name' => $request->name,
+            'name' => $user->name,
 
-            'email' => $request->email,
+            'email' => $user->email,
 
             'comment' => $request->comment,
 
-            'status' => 0
+            'status' => 0,
 
         ]);
 
         return back()->with(
             'success',
-            'Comment submitted and awaiting approval.'
+            'Your comment has been submitted and is awaiting approval.'
         );
     }
 }

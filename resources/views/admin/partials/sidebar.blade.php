@@ -34,35 +34,44 @@
 
         </li>
 
-        <li class="nav-item">
+        @role('Super Admin|Admin')
+            <li class="nav-item">
 
-            <a href="{{ route('admin.pages.index') }}" class="nav-link">
+                <a href="{{ route('admin.pages.index') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.pages.*') ? 'bg-primary' : '' }}">
 
-                <i class="fa-solid fa-file-lines"></i>
+                    <i class="fa-solid fa-file-lines"></i>
 
-                <span>Pages</span>
+                    <span>Pages</span>
 
-            </a>
+                </a>
 
-        </li>
+            </li>
+        @endrole
 
-        <li class="nav-item">
-            <a href="{{ route('admin.categories.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.categories.*') ? 'bg-primary' : '' }}">
+        @role('Super Admin|Admin|Editor')
+            <li class="nav-item">
+                <a href="{{ route('admin.categories.index') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.categories.*') ? 'bg-primary' : '' }}">
 
-                <i class="fa-solid fa-list"></i>
-                Categories
-            </a>
-        </li>
+                    <i class="fa-solid fa-list"></i>
+                    Categories
+                </a>
+            </li>
+        @endrole
 
-        <li class="nav-item">
-            <a href="{{ route('admin.posts.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.posts.*') ? 'bg-primary' : '' }}">
+        @role('Super Admin|Admin|Editor|Author')
+            <li class="nav-item">
+                <a href="{{ route('admin.posts.index') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.posts.*') ? 'bg-primary' : '' }}">
 
-                <i class="fa-solid fa-newspaper"></i>
-                Posts
-            </a>
-        </li>
+                    <i class="fa-solid fa-newspaper"></i>
+                    Posts
+                </a>
+            </li>
+        @endrole
+
+
 
         <li class="nav-item">
 
@@ -88,41 +97,52 @@
 
         </li>
 
-        <li class="nav-item">
+        @role('Super Admin')
+            <li class="nav-item">
+                <a href="{{ route('admin.settings.edit') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.settings.edit') ? 'bg-primary' : '' }}">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+        @endrole
 
-            <a href="{{ route('admin.settings.edit') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.settings.edit') ? 'bg-primary' : '' }}">
+        @role('Super Admin|Admin|Editor')
+            <li class="nav-item">
 
-                <i class="fa-solid fa-gear"></i>
-                Settings
+                <a href="{{ route('admin.galleries.index') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.galleries.*') ? 'bg-primary' : '' }}">
 
-            </a>
+                    <i class="fa-solid fa-image"></i>
+                    Gallery
 
-        </li>
+                </a>
 
-        <li class="nav-item">
+            </li>
+        @endrole
 
-            <a href="{{ route('admin.galleries.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.galleries.*') ? 'bg-primary' : '' }}">
+        @role('Super Admin|Admin|Editor')
+            <li class="nav-item">
 
-                <i class="fa-solid fa-image"></i>
-                Gallery
+                <a href="{{ route('admin.comments.index') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.comments.*') ? 'bg-primary' : '' }}">
 
-            </a>
+                    <i class="fa-solid fa-comment"></i>
+                    Comments
 
-        </li>
+                </a>
+            </li>
+        @endrole
 
-        <li class="nav-item">
-
-            <a href="{{ route('admin.comments.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.comments.*') ? 'bg-primary' : '' }}">
-
-                <i class="fa-solid fa-comment"></i>
-                Comments
-
-            </a>
-
-        </li>
+        @role('Super Admin|Admin')
+            <li class="nav-item">
+                <a href="{{ route('admin.users.index') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.users.*') ? 'bg-primary' : '' }}">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </a>
+            </li>
+        @endrole
 
     </ul>
 

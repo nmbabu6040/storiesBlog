@@ -138,87 +138,149 @@
                     </div>
                 @endif
 
+                {{-- comment part start  --}}
                 <div class="sidebar-widget mt-5">
 
                     <h4 class="mb-4">
                         Leave a Comment
                     </h4>
 
-                    <form action="{{ route('frontend.comment.store') }}" method="POST">
+                    @if (session('success'))
+                        <div class="alert alert-success">
 
-                        @csrf
-
-                        <input type="hidden" name="post_id" value="{{ $post->id }}">
-
-                        <div class="mb-3">
-
-                            <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+                            {{ session('success') }}
 
                         </div>
+                    @endif
 
-                        <div class="mb-3">
-
-                            <input type="email" name="email" class="form-control" placeholder="Your Email" required>
-
+                    @if (session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
                         </div>
+                    @endif
 
-                        <div class="mb-3">
+                    @auth
 
-                            <textarea name="comment" rows="5" class="form-control" placeholder="Write your comment" required></textarea>
+                        <form action="{{ route('frontend.comment.store') }}" method="POST">
 
-                        </div>
+                            @csrf
 
-                        <button type="submit" class="btn btn-primary">
+                            <input type="hidden" name="post_id" value="{{ $post->id }}">
 
-                            Submit Comment
+                            <div class="mb-3">
 
-                        </button>
+                                <label class="form-label">
 
-                    </form>
+                                    Your Comment
 
-                    <div class="sidebar-widget mt-4">
+                                </label>
 
-                        <h4 class="mb-4">
+                                <textarea name="comment" rows="5" class="form-control" placeholder="Write your comment..." required>{{ old('comment') }}</textarea>
 
-                            Comments
-                            ({{ $post->comments->count() }})
-
-                        </h4>
-
-                        @forelse($post->comments as $comment)
-                            <div class="mb-4">
-
-                                <div class="d-flex gap-3">
-                                    <h6 class="text-primary">{{ $comment->name }}</h6>
-
+                                @error('comment')
                                     <small class="text-danger">
 
-                                        {{ $comment->created_at->format('d M Y') }}
+                                        {{ $message }}
 
                                     </small>
-                                </div>
-
-                                <p class="mt-2">
-
-                                    {{ $comment->comment }}
-
-                                </p>
+                                @enderror
 
                             </div>
 
+                            <button class="btn btn-primary">
+
+                                Post Comment
+
+                            </button>
+
+                        </form>
+                    @else
+                        <div class="alert alert-info">
+
+                            <h5 class="mb-2">
+
+                                Join the Discussion
+
+                            </h5>
+
+                            <p class="mb-3">
+
+                                Please login or create an account to post a comment.
+
+                            </p>
+
+                            <a href="{{ route('login') }}" class="btn btn-primary me-2">
+
+                                Login
+
+                            </a>
+
+                            <a href="{{ route('register') }}" class="btn btn-outline-primary">
+
+                                Register
+
+                            </a>
+
+                        </div>
+
+                    @endauth
+
+                </div>
+
+                {{-- comment part end start --}}
+                <div class="sidebar-widget mt-5">
+
+                    <h4 class="mb-4">
+
+                        Comments ({{ $post->comments->count() }})
+
+                    </h4>
+
+                    @forelse($post->comments as $comment)
+                        <div class="mb-4">
+
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <h6 class="text-primary mb-0">
+
+                                    {{ $comment->name }}
+
+                                </h6>
+
+                                <small class="text-muted">
+
+                                    {{ $comment->created_at->format('d M, Y') }}
+
+                                </small>
+
+                            </div>
+
+                            <p class="mt-3 mb-0">
+
+                                {{ $comment->comment }}
+
+                            </p>
+
+                        </div>
+
+                        @if (!$loop->last)
                             <hr>
+                        @endif
 
-                        @empty
+                    @empty
 
-                            <p>No comments yet.</p>
-                        @endforelse
+                        <div class="alert alert-light border">
 
-                    </div>
+                            No comments yet. Be the first to comment.
+
+                        </div>
+                    @endforelse
 
                 </div>
 
             </div>
 
+            {{-- recent and populer post part  --}}
             <div class="col-lg-4">
 
                 <div class="card">
@@ -286,7 +348,7 @@
         </div>
 
 
-
+        {{-- author part start  --}}
         <div class="card mt-5 authorPart">
 
             <div class="card-body p-5">
@@ -358,7 +420,7 @@
             </div>
 
         </div>
-
+        {{-- releted post part  --}}
         <div class="reletedPostPart mt-5">
             <h3 class="mb-4">
 
@@ -397,176 +459,10 @@
     </div>
 
     {{-- destination section  --}}
-    <section class="py-5 bg-white">
-
-        <div class="container">
-
-            <div class="row">
-
-                <div class="col-lg-4">
-
-                    <h5 class="section-title">
-                        DESTINATIONS
-                    </h5>
-
-                    @foreach ($destinationPosts as $post)
-                        <div class="small-post">
-
-                            <img src="{{ asset('storage/' . $post->thumbnail) }}" alt="{{ $post->title }}">
-
-                            <div class="d-block">
-
-                                <h6><a href="{{ route('frontend.post.show', $post->slug) }}">
-
-                                        {{ $post->title }}
-
-                                    </a>
-                                </h6>
-
-                                <p>
-
-                                    {{ $post->created_at->format('d M Y') }}
-
-                                </p>
-
-                            </div>
-
-                        </div>
-                    @endforeach
-
-                </div>
-
-                <div class="col-lg-4">
-
-                    <h5 class="section-title">
-                        LIFESTYLE
-                    </h5>
-
-                    @foreach ($lifestylePosts as $post)
-                        <div class="small-post">
-
-                            <img src="{{ asset('storage/' . $post->thumbnail) }}" alt="{{ $post->title }}">
-
-                            <div class="d-block">
-
-                                <h6>
-                                    <a href="{{ route('frontend.post.show', $post->slug) }}">
-
-                                        {{ $post->title }}
-
-                                    </a>
-                                </h6>
-
-                                <small>
-
-                                    {{ $post->created_at->format('d M Y') }}
-
-                                </small>
-
-                            </div>
-
-                        </div>
-                    @endforeach
-
-                </div>
-
-                <div class="col-lg-4">
-
-                    <h5 class="section-title">
-                        PHOTOGRAPHY
-                    </h5>
-
-                    @foreach ($photographyPosts as $post)
-                        <div class="small-post">
-
-                            <img src="{{ asset('storage/' . $post->thumbnail) }}" alt="{{ $post->title }}">
-
-                            <div class="d-block">
-
-                                <h6>
-                                    <a href="{{ route('frontend.post.show', $post->slug) }}">
-
-                                        {{ $post->title }}
-
-                                    </a>
-                                </h6>
-
-                                <small>
-
-                                    {{ $post->created_at->format('d M Y') }}
-
-                                </small>
-
-                            </div>
-
-                        </div>
-                    @endforeach
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
+    @include('frontend.partials.destination-section')
 
     {{-- categories section  --}}
-    <section class="py-5">
-
-        <div class="container">
-
-            <h5 class="section-title">
-                CATEGORIES
-            </h5>
-
-            <div class="row g-4">
-
-                <div class="categorySlider owl-carousel owl-theme">
-
-                    @foreach ($categories as $category)
-                        <div class="item">
-
-                            <div class="post-card text-center">
-
-                                <a href="{{ route('frontend.category.show', $category->slug) }}">
-
-                                    <img class="post-image-sm" src="{{ asset('storage/' . $category->image) }}"
-                                        alt="{{ $category->name }}">
-
-                                </a>
-
-                                <div class="post-content">
-
-                                    <h5>
-
-                                        <a href="{{ route('frontend.category.show', $category->slug) }}">
-
-                                            {{ $category->name }}
-
-                                        </a>
-
-                                    </h5>
-
-                                    <small>
-
-                                        {{ $category->posts()->count() }}
-                                        Posts
-
-                                    </small>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-                    @endforeach
-
-                </div>
-
-            </div>
-        </div>
-
-    </section>
+    @include('frontend.partials.category-slider')
 @endsection
 
 @push('scripts')

@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 
+@php
+    $siteSetting = \App\Models\Setting::first();
+@endphp
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
+    <title>{{ $siteSetting->site_name }} | Login</title>
 
+    @if (!empty($siteSetting->favicon))
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . $siteSetting->favicon) }}">
+    @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
@@ -45,14 +52,16 @@
             <div class="text-center mb-4">
 
                 <h2 class="brand">
-                    stor<span>ies.</span>
+                    {{ $siteSetting->site_name }}
                 </h2>
 
                 <p class="text-muted">
-                    Admin Login
+                    Sign in to your account
                 </p>
 
             </div>
+
+
 
             @if (session('status'))
                 <div class="alert alert-success">
@@ -113,6 +122,18 @@
                     Login
 
                 </button>
+
+                <div class="d-flex justify-content-between mt-3">
+
+                    <a href="{{ route('password.request') }}">
+                        Forgot Password?
+                    </a>
+
+                    <a href="{{ route('register') }}">
+                        Register
+                    </a>
+
+                </div>
 
             </form>
 

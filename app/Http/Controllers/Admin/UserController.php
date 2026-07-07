@@ -16,10 +16,7 @@ class UserController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view(
-            'admin.users.index',
-            compact('users')
-        );
+        return view('admin.users.index', compact('users'));
     }
 
     public function create()
@@ -70,6 +67,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'role' => 'required|exists:roles,name',
+
         ]);
 
         $data = [

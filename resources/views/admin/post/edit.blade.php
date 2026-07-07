@@ -137,12 +137,43 @@
     </div>
 
 @endsection
-@push('scripts')
+{{-- @push('scripts')
     <script>
         ClassicEditor
-            .create(document.querySelector('#content'))
-            .catch(error => {
-                console.error(error);
-            });
+            .create(document.querySelector('#content'), {
+
+                simpleUpload: {
+
+                    uploadUrl: "{{ route('admin.ckeditor.upload') }}",
+
+                    headers: {
+
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+
+                    }
+
+                }
+
+            })
+            .catch(error => console.error(error));
+    </script>
+@endpush --}}
+@push('scripts')
+    <script>
+        window.addEventListener('load', function() {
+
+            const textarea = document.getElementById('content');
+
+            console.log(textarea);
+
+            if (textarea) {
+
+                CKEDITOR.replace(textarea, {
+                    height: 500
+                });
+
+            }
+
+        });
     </script>
 @endpush

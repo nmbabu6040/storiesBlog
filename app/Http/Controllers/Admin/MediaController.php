@@ -1,0 +1,61 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Media;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+class MediaController extends Controller
+{
+    public function index()
+    {
+        $media = Media::latest()->paginate(20);
+
+        return view('admin.media.index', compact('media'));
+    }
+
+    public function create()
+    {
+        return view('admin.media.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|max:4096',
+        ]);
+
+        $file = $request->file('image');
+
+        $path = $file->store('media', 'public');
+
+        Media::create([
+
+            'user_id' => auth()->id(),
+
+            'file_name' => $file->getClientOriginalName(),
+
+            'file_path' => $path,
+
+            'file_type' => $file->getMimeType(),
+
+            'file_size' => $file->getSize(),
+
+        ]);
+
+        return redirect()
+            ->route('admin.media.index')
+            ->with('success', 'Image uploaded successfully.');
+    }
+
+    public function destroy(Media $medium)
+    {
+        Storage::disk('public')->delete($medium->file_path);
+
+        $medium->delete();
+
+        return back()->with('success', 'Image deleted successfully.');
+    }
+}

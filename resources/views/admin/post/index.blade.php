@@ -79,19 +79,42 @@
 
                             <td>
 
-                                @if ($post->status)
+                                @if ($post->review_status == 'approved')
                                     <span class="badge bg-success">
-                                        Published
+                                        Approved
+                                    </span>
+                                @elseif ($post->review_status == 'pending')
+                                    <span class="badge bg-warning text-dark">
+                                        Pending
                                     </span>
                                 @else
                                     <span class="badge bg-danger">
-                                        Draft
+                                        Rejected
                                     </span>
                                 @endif
 
                             </td>
 
-                            <td>
+
+
+                            <td class="d-flex gap-2">
+
+                                @if (
+                                    $post->review_status == 'pending' &&
+                                        auth()->user()->hasAnyRole(['Super Admin', 'Admin', 'Editor']))
+                                    <form action="{{ route('admin.posts.approve', $post) }}" method="POST"
+                                        class="d-inline">
+
+                                        @csrf
+
+                                        <button class="btn btn-success btn-sm">
+
+                                            Approve
+
+                                        </button>
+
+                                    </form>
+                                @endif
 
                                 <a href="{{ route('admin.posts.edit', $post->id) }}" class="btn btn-warning btn-sm">
 

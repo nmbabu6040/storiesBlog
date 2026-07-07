@@ -31,9 +31,13 @@
 
         <div class="row">
 
-            @include('admin.partials.sidebar')
+            <div class="col-md-2 p-0">
 
-            <main class="col-md-10 ms-sm-auto px-md-4 py-4">
+                @include('admin.partials.sidebar')
+
+            </div>
+
+            <main class="col-md-10 ms-sm-auto px-md-4 py-4" style="margin-left:16.666667%;">
 
                 @include('admin.partials.navbar')
 
@@ -45,7 +49,10 @@
 
     </div>
 
-    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+
+    {{-- <script src="https://cdn.ckeditor.com/4.25.1-lts/full/ckeditor.js"></script> --}}
+    {{-- <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script> --}}
+    <script src="https://cdn.ckeditor.com/4.22.0/full/ckeditor.js"></script>
 
     @stack('scripts')
 </body>

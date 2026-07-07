@@ -43,9 +43,7 @@
                             <td>{{ $user->email }}</td>
 
                             <td>
-
-                                {{ $user->roles->pluck('name')->implode(', ') ?: 'No Role' }}
-
+                                {{ $user->roles->pluck('name')->implode(', ') }}
                             </td>
 
                             <td>

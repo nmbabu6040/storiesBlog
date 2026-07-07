@@ -68,7 +68,7 @@
                         Content
                     </label>
 
-                    <textarea id="content" name="content" rows="10" class="form-control"></textarea>
+                    <textarea id="content" name="content" rows="10" class="form-control">{{ old('content') }}</textarea>
 
                 </div>
 
@@ -104,17 +104,25 @@
 
                 </div>
 
-                <div class="form-check mb-4">
+                @if (auth()->user()->hasAnyRole(['Super Admin', 'Admin', 'Editor']))
+                    <div class="form-check mb-3">
 
-                    <input class="form-check-input" type="checkbox" name="status" value="1" checked>
+                        <input class="form-check-input" type="checkbox" name="status" value="1" checked>
 
-                    <label class="form-check-label">
+                        <label class="form-check-label">
 
-                        Publish
+                            Publish
 
-                    </label>
+                        </label>
 
-                </div>
+                    </div>
+                @else
+                    <div class="alert alert-warning">
+
+                        Your post will be submitted for review before publishing.
+
+                    </div>
+                @endif
 
                 <button type="submit" class="btn btn-primary">
 
@@ -129,12 +137,43 @@
     </div>
 
 @endsection
-@push('scripts')
+{{-- @push('scripts')
     <script>
         ClassicEditor
-            .create(document.querySelector('#content'))
-            .catch(error => {
-                console.error(error);
-            });
+            .create(document.querySelector('#content'), {
+
+                simpleUpload: {
+
+                    uploadUrl: "{{ route('admin.ckeditor.upload') }}",
+
+                    headers: {
+
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+
+                    }
+
+                }
+
+            })
+            .catch(error => console.error(error));
+    </script>
+@endpush --}}
+@push('scripts')
+    <script>
+        window.addEventListener('load', function() {
+
+            const textarea = document.getElementById('content');
+
+            console.log(textarea);
+
+            if (textarea) {
+
+                CKEDITOR.replace(textarea, {
+                    height: 500
+                });
+
+            }
+
+        });
     </script>
 @endpush

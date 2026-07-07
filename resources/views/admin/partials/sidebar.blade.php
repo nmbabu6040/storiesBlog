@@ -1,4 +1,5 @@
-<div class="col-md-2 bg-dark min-vh-100 p-0">
+<div class="bg-dark text-white p-0 position-fixed top-0 start-0 vh-100 d-flex flex-column"
+    style="width:16.666667%; overflow-y:auto;">
 
     <div class="p-3 mb-5">
 
@@ -121,6 +122,19 @@
             </li>
         @endrole
 
+        <li class="nav-item">
+
+            <a href="{{ route('admin.media.index') }}"
+                class="nav-link text-white {{ request()->routeIs('admin.media.*') ? 'bg-primary' : '' }}">
+
+                <i class="fa-solid fa-photo-film"></i>
+
+                Media Library
+
+            </a>
+
+        </li>
+
         @role('Super Admin|Admin|Editor')
             <li class="nav-item">
 
@@ -145,5 +159,21 @@
         @endrole
 
     </ul>
+    <div class="mt-auto p-3">
 
+        <form action="{{ route('logout') }}" method="POST">
+
+            @csrf
+
+            <button class="btn btn-danger w-100">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                Logout
+
+            </button>
+
+        </form>
+
+    </div>
 </div>

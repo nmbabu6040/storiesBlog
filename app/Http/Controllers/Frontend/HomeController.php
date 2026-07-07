@@ -19,6 +19,7 @@ class HomeController extends Controller
 
         $featuredPosts = Post::with('category')
             ->where('status', 1)
+            ->where('review_status', 'approved')
             ->where('featured', 1)
             ->latest()
             ->take(3)
@@ -26,6 +27,7 @@ class HomeController extends Controller
 
         $latestPosts = Post::with('category')
             ->where('status', 1)
+            ->where('review_status', 'approved')
             ->latest()
             ->take(4)
             ->get();
@@ -36,12 +38,14 @@ class HomeController extends Controller
             ->get();
 
         $popularPosts = Post::where('status', 1)
+            ->where('review_status', 'approved')
             ->orderByDesc('views')
             ->take(4)
             ->get();
 
         $travelPosts = Post::with('category')
             ->where('status', 1)
+            ->where('review_status', 'approved')
             ->when($setting?->travel_category_id, function ($query) use ($setting) {
                 $query->where('category_id', $setting->travel_category_id);
             })
@@ -51,6 +55,7 @@ class HomeController extends Controller
 
         $destinationPosts = Post::with('category')
             ->where('status', 1)
+            ->where('review_status', 'approved')
             ->when($setting?->destination_category_id, function ($query) use ($setting) {
                 $query->where('category_id', $setting->destination_category_id);
             })
@@ -60,6 +65,7 @@ class HomeController extends Controller
 
         $lifestylePosts = Post::with('category')
             ->where('status', 1)
+            ->where('review_status', 'approved')
             ->when($setting?->lifestyle_category_id, function ($query) use ($setting) {
                 $query->where('category_id', $setting->lifestyle_category_id);
             })
@@ -69,6 +75,7 @@ class HomeController extends Controller
 
         $photographyPosts = Post::with('category')
             ->where('status', 1)
+            ->where('review_status', 'approved')
             ->when($setting?->photography_category_id, function ($query) use ($setting) {
                 $query->where('category_id', $setting->photography_category_id);
             })

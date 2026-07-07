@@ -1,5 +1,4 @@
 import "./bootstrap";
-
 import "./frontend/typewriter";
 
 import Alpine from "alpinejs";

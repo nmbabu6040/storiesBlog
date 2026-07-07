@@ -8,19 +8,26 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\User;
 
 class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::with('category')
-            ->latest()
-            ->get();
+        if (auth()->user()->hasAnyRole(['Super Admin', 'Admin', 'Editor'])) {
 
-        return view(
-            'admin.post.index',
-            compact('posts')
-        );
+            $posts = Post::with(['category', 'user'])
+                ->latest()
+                ->paginate(10);
+        } else {
+
+            $posts = Post::with(['category', 'user'])
+                ->where('user_id', auth()->id())
+                ->latest()
+                ->paginate(10);
+        }
+
+        return view('admin.post.index', compact('posts'));
     }
 
     public function create()
@@ -42,6 +49,7 @@ class PostController extends Controller
             'title' => 'required|max:255',
             'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'content' => 'required',
+
         ]);
 
         $thumbnail = null;
@@ -63,11 +71,23 @@ class PostController extends Controller
 
         Post::create([
 
+            'user_id' => auth()->id(),
+
+            'review_status' => auth()->user()->hasAnyRole([
+                'Super Admin',
+                'Admin',
+                'Editor'
+            ]) ? 'approved' : 'pending',
+
+            'approved_by' => auth()->user()->hasAnyRole([
+                'Super Admin',
+                'Admin',
+                'Editor'
+            ]) ? auth()->id() : null,
+
             'category_id' => $request->category_id,
 
             'title' => $request->title,
-
-            // 'slug' => Str::slug($request->title),
 
             'slug' => $slug,
 
@@ -81,9 +101,14 @@ class PostController extends Controller
 
             'featured' => $request->featured ? 1 : 0,
 
-            'status' => $request->status ? 1 : 0,
+            'status' => auth()->user()->hasAnyRole([
+                'Super Admin',
+                'Admin',
+                'Editor'
+            ]) ? ($request->status ? 1 : 0) : 0,
 
             'views' => 0
+
 
         ]);
 
@@ -102,6 +127,8 @@ class PostController extends Controller
 
     public function edit(Post $post)
     {
+        $this->authorize('update', $post);
+
         $categories = Category::where('status', 1)
             ->orderBy('name')
             ->get();
@@ -117,6 +144,8 @@ class PostController extends Controller
 
     public function update(Request $request, Post $post)
     {
+        $this->authorize('update', $post);
+
         $request->validate([
             'category_id' => 'required|exists:categories,id',
             'title' => 'required|max:255',
@@ -182,6 +211,9 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
+
+        $this->authorize('delete', $post);
+
         if ($post->thumbnail) {
 
             Storage::disk('public')
@@ -196,5 +228,21 @@ class PostController extends Controller
                 'success',
                 'Post Deleted Successfully'
             );
+    }
+
+    public function approve(Post $post)
+    {
+        $post->update([
+
+            'review_status' => 'approved',
+
+            'approved_by' => auth()->id(),
+
+        ]);
+
+        return back()->with(
+            'success',
+            'Post approved successfully.'
+        );
     }
 }

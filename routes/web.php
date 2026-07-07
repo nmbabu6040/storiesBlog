@@ -16,6 +16,7 @@ use App\Http\Controllers\Frontend\CommentController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Frontend\PageController as FrontendPageController;
+use App\Http\Controllers\Admin\CKEditorController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
@@ -74,30 +75,77 @@ Route::name('frontend.')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () {
+Route::prefix('admin')
+    ->middleware(['auth', 'role:Super Admin|Admin|Editor|Author'])
+    ->name('admin.')
+    ->group(function () {
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::resource('categories', CategoryController::class);
-    Route::resource('posts', PostController::class);
-    Route::get('/messages', [ContactMessageController::class, 'index'])->name('messages.index');
-    Route::get('/subscribers', [AdminSubscriberController::class, 'index'])->name('subscribers.index');
-    Route::get('/settings', [SettingController::class, 'edit'])->name('settings.edit');
-    Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
-    Route::resource('galleries', GalleryController::class)->except(['show']);
-    Route::get('/comments', [\App\Http\Controllers\Admin\CommentController::class, 'index'])->name('comments.index');
-    Route::post(
-        '/comments/{comment}/approve',
-        [\App\Http\Controllers\Admin\CommentController::class, 'approve']
-    )->name('comments.approve');
-    Route::delete(
-        '/comments/{comment}',
-        [\App\Http\Controllers\Admin\CommentController::class, 'destroy']
-    )->name('comments.destroy');
-    Route::resource('menus', MenuController::class);
-    Route::resource('pages', AdminPageController::class);
-    Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
-});
+        Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->name('dashboard');
 
+        // Posts
+        Route::resource('posts', PostController::class);
+
+        // Categories
+        Route::resource('categories', CategoryController::class)
+            ->middleware('permission:manage-categories');
+
+        // Pages
+        Route::resource('pages', AdminPageController::class)
+            ->middleware('permission:manage-pages');
+
+        // Menus
+        Route::resource('menus', MenuController::class)
+            ->middleware('permission:manage-pages');
+
+        // Gallery
+        Route::resource('galleries', GalleryController::class)
+            ->except(['show'])
+            ->middleware('permission:manage-gallery');
+
+        // Comments
+        Route::get('/comments', [AdminCommentController::class, 'index'])
+            ->name('comments.index')
+            ->middleware('permission:manage-comments');
+
+        Route::post('/comments/{comment}/approve', [AdminCommentController::class, 'approve'])
+            ->name('comments.approve')
+            ->middleware('permission:manage-comments');
+
+        Route::delete('/comments/{comment}', [AdminCommentController::class, 'destroy'])
+            ->name('comments.destroy')
+            ->middleware('permission:manage-comments');
+
+        // Messages
+        Route::get('/messages', [ContactMessageController::class, 'index'])
+            ->name('messages.index');
+
+        // Subscribers
+        Route::get('/subscribers', [AdminSubscriberController::class, 'index'])
+            ->name('subscribers.index');
+
+        // Users (Super Admin Only)
+        Route::resource('users', \App\Http\Controllers\Admin\UserController::class)
+            ->middleware('permission:manage-users');
+
+        // Settings (Super Admin Only)
+        Route::get('/settings', [SettingController::class, 'edit'])
+            ->name('settings.edit')
+            ->middleware('permission:manage-settings');
+
+        Route::post('/settings', [SettingController::class, 'update'])
+            ->name('settings.update')
+            ->middleware('permission:manage-settings');
+
+        Route::post(
+            '/posts/{post}/approve',
+            [PostController::class, 'approve']
+        )->name('posts.approve');
+
+        Route::resource('media', \App\Http\Controllers\Admin\MediaController::class);
+        Route::post('/ckeditor/upload', [CKEditorController::class, 'upload'])
+            ->name('ckeditor.upload');
+    });
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -105,12 +153,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::prefix('admin')->middleware(['auth', 'role:Super Admin|Admin'])->name('admin.')->group(function () {
-    Route::resource('users', \App\Http\Controllers\Admin\UserController::class)
-        ->middleware('role:Super Admin');
-    Route::resource('settings', SettingController::class)
-        ->middleware('role:Super Admin');
-    Route::resource('posts', PostController::class)
-        ->middleware('role:Super Admin|Admin|Editor|Author');
-});
+// Route::prefix('admin')->middleware(['auth', 'role:Super Admin|Admin'])->name('admin.')->group(function () {
+//     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)
+//         ->middleware('role:Super Admin');
+//     Route::resource('settings', SettingController::class)
+//         ->middleware('role:Super Admin');
+//     Route::resource('posts', PostController::class)
+//         ->middleware('role:Super Admin|Admin|Editor|Author');
+// });
 require __DIR__ . '/auth.php';

@@ -8,9 +8,10 @@
         Create User
     </h3>
 
-    <form action="{{ route('admin.users.store') }}" method="POST">
+    <form action="{{ route('admin.users.update', $user) }}') }}" method="POST">
 
         @csrf
+        @method('PUT')
 
         <div class="card">
 
@@ -33,7 +34,7 @@
                 <div class="mb-3">
                     <label>Password</label>
 
-                    <input type="password" name="password" class="form-control">
+                    <input type="password" name="password" class="form-control" value="{{ old('password') }}">
 
                     <small class="text-muted">
 
@@ -51,8 +52,7 @@
                 </div>
 
                 <div class="mb-3">
-
-                    <label>Role</label>
+                    <label class="form-label">Role</label>
 
                     <select name="role" class="form-select">
 
@@ -65,14 +65,19 @@
                         @endforeach
 
                     </select>
-
                 </div>
 
-                <button class="btn btn-primary">
+                <div class="d-flex gap-3">
+                    <button class="btn btn-primary">
 
-                    Save User
+                        Save User
 
-                </button>
+                    </button>
+
+                    <a href="{{ route('admin.users.index') }}" class="btn btn-danger">
+                        Cancel
+                    </a>
+                </div>
 
             </div>
 

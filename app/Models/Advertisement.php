@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Advertisement extends Model
+{
+    protected $fillable = [
+
+        'title',
+        'position',
+        'type',
+        'code',
+        'image',
+        'url',
+        'status',
+        'sort_order'
+
+    ];
+
+    public function scopeActive($query, $position)
+    {
+        return $query->where('status', 1)
+            ->where('position', $position)
+            ->orderBy('sort_order');
+    }
+}

@@ -13,7 +13,7 @@
                 value="{{ old('slug', $page->slug ?? '') }}">
         </div>
 
-        <div class="mb-3">
+        {{-- <div class="mb-3">
             <label class="form-label">Banner Image</label>
 
             <input type="file" name="banner_image" class="form-control">
@@ -21,6 +21,39 @@
             @if (isset($page) && $page->banner_image)
                 <img src="{{ asset('storage/' . $page->banner_image) }}" width="180" class="mt-3 rounded">
             @endif
+        </div> --}}
+
+        <div class="mb-3">
+
+            <label class="form-label">
+
+                Banner Image
+
+            </label>
+
+            <input type="file" name="banner_image" class="form-control">
+
+            @if (isset($page) && $page->banner_image)
+                <div class="mt-3">
+
+                    <img src="{{ asset('storage/' . $page->banner_image) }}" width="180" class="img-thumbnail">
+
+                </div>
+
+                <div class="form-check mt-2">
+
+                    <input type="checkbox" class="form-check-input" id="remove_banner" name="remove_banner"
+                        value="1">
+
+                    <label class="form-check-label" for="remove_banner">
+
+                        Remove current banner
+
+                    </label>
+
+                </div>
+            @endif
+
         </div>
 
         <div class="mb-3">
@@ -55,3 +88,64 @@
 
     </div>
 </div>
+@push('scripts')
+    <script>
+        $(function() {
+
+            $('#content').summernote({
+
+                height: 500,
+
+                callbacks: {
+
+                    onImageUpload: function(files) {
+
+                        uploadImage(files[0]);
+
+                    }
+
+                }
+
+            });
+
+            function uploadImage(file) {
+
+                let data = new FormData();
+
+                data.append('file', file);
+
+                data.append('_token', '{{ csrf_token() }}');
+
+                $.ajax({
+
+                    url: "{{ route('admin.summernote.upload') }}",
+
+                    method: "POST",
+
+                    data: data,
+
+                    processData: false,
+
+                    contentType: false,
+
+                    success: function(res) {
+
+                        $('#content').summernote('insertImage', res.location);
+
+                    },
+
+                    error: function(err) {
+
+                        console.log(err);
+
+                        alert('Image upload failed.');
+
+                    }
+
+                });
+
+            }
+
+        });
+    </script>
+@endpush

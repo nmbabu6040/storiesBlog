@@ -1,3 +1,20 @@
+@if ($footerAd)
+
+    <div class="container py-4 text-center">
+
+        @if ($footerAd->type == 'image')
+            <a href="{{ $footerAd->url }}" target="_blank">
+
+                <img src="{{ asset('storage/' . $footerAd->image) }}" class="img-fluid">
+
+            </a>
+        @else
+            {!! $footerAd->code !!}
+        @endif
+
+    </div>
+
+@endif
 <footer class="footer-main">
 
     <div class="container">

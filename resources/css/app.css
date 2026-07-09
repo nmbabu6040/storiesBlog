@@ -64,3 +64,12 @@
 .navbar .dropdown-toggle::after {
     margin-left: 8px;
 }
+.navbar .nav-link.active,
+.dropdown-item.active {
+    color: #0d6efd !important;
+    font-weight: 600;
+}
+
+.dropdown-item.active {
+    background-color: rgba(13, 110, 253, 0.1);
+}

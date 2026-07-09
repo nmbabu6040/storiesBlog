@@ -8,29 +8,86 @@
 
 @section('content')
 
-    <section class="page-banner">
+    <section class="page-banner mt-5">
 
-        @if ($page->banner_image)
-            <img src="{{ asset('storage/' . $page->banner_image) }}" class="img-fluid w-100" alt="{{ $page->title }}">
-        @endif
+        <div class="container">
+            @if ($page->banner_image)
+                <img src="{{ asset('storage/' . $page->banner_image) }}" class="img-fluid w-100 rounded" alt="">
+            @endif
+        </div>
 
     </section>
 
     <section class="container py-5">
 
-        <h1 class="mb-4">
+        <div class="text-center">
+            <h1 class="mb-4">
 
-            {{ $page->title }}
+                {{ $page->title }}
 
-        </h1>
+            </h1>
 
+            @if ($page->slug == 'about')
+                <p class="text-primary">
+
+                    <span class="typewrite" data-type='@json($heroTypes)' data-period="2000">
+                    </span>
+
+                </p>
+            @endif
+
+        </div>
         <div class="page-content mb-5">
 
             {!! $page->content !!}
 
         </div>
 
-        @if ($page->slug == 'contact')
+        @if ($page->slug == 'blog')
+
+            <div class="row mt-5">
+
+                @foreach ($posts as $post)
+                    <div class="col-md-4 mb-4">
+
+                        <div class="card h-100">
+
+                            @if ($post->thumbnail)
+                                <img src="{{ asset('storage/' . $post->thumbnail) }}" class="card-img-top">
+                            @endif
+
+                            <div class="card-body">
+
+                                <h5 class="card-title">
+
+                                    <a href="{{ route('frontend.post.show', $post->slug) }}">
+
+                                        {{ $post->title }}
+
+                                    </a>
+
+                                </h5>
+
+                                <p class="card-text">
+
+                                    {{ $post->excerpt }}
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                @endforeach
+
+            </div>
+
+        @endif
+
+
+
+        @if ($page->slug == 'contact' || $page->slug == 'about')
 
             <div class="row mt-5">
 
@@ -47,9 +104,9 @@
                             </h3>
 
                             @if ($setting->address)
-                                <div class="mb-4">
+                                <div class="mb-4 d-flex gap-2">
 
-                                    <h6>Address</h6>
+                                    <strong>Address:</strong>
 
                                     <p class="mb-0">
 
@@ -61,11 +118,11 @@
                             @endif
 
                             @if ($setting->phone)
-                                <div class="mb-4">
+                                <div class="mb-4 d-flex gap-2">
 
-                                    <h6>Phone</h6>
+                                    <strong>Phone:</strong>
 
-                                    <a href="tel:{{ $setting->phone }}">
+                                    <a href="tel:{{ $setting->phone }}" class="text-dark">
 
                                         {{ $setting->phone }}
 
@@ -75,11 +132,11 @@
                             @endif
 
                             @if ($setting->email)
-                                <div class="mb-4">
+                                <div class="mb-4 d-flex gap-2">
 
-                                    <h6>Email</h6>
+                                    <strong>Email:</strong>
 
-                                    <a href="mailto:{{ $setting->email }}">
+                                    <a href="mailto:{{ $setting->email }}" class="text-dark">
 
                                         {{ $setting->email }}
 
@@ -152,7 +209,7 @@
             </div>
 
             @if ($setting->google_map)
-                <div class="mt-5">
+                <div class="mt-5 w-100">
 
                     {!! $setting->google_map !!}
 

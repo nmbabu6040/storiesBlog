@@ -78,21 +78,32 @@ class PageController extends Controller
             'slug',
             'content',
             'meta_title',
+            'banner_image',
             'meta_description'
         ]);
 
         $data['status'] = $request->boolean('status');
 
+        $bannerImage = $page->banner_image;
+
         if ($request->hasFile('banner_image')) {
 
-            if ($page->banner_image && Storage::disk('public')->exists($page->banner_image)) {
+            if ($page->banner_image) {
 
                 Storage::disk('public')->delete($page->banner_image);
             }
 
-            $data['banner_image'] = $request
+            $bannerImage = $request
                 ->file('banner_image')
                 ->store('pages', 'public');
+        } elseif ($request->filled('remove_banner')) {
+
+            if ($page->banner_image) {
+
+                Storage::disk('public')->delete($page->banner_image);
+            }
+
+            $bannerImage = null;
         }
 
         $page->update($data);

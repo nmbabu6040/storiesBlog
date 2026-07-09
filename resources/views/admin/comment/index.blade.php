@@ -22,13 +22,19 @@
 
             <tr>
 
-                <th>Name</th>
+                <th>#</th>
+
+                <th>User</th>
 
                 <th>Post</th>
 
                 <th>Comment</th>
 
+                <th>Replies</th>
+
                 <th>Status</th>
+
+                <th>Date</th>
 
                 <th>Action</th>
 
@@ -41,9 +47,15 @@
             @foreach ($comments as $comment)
                 <tr>
 
+                    <td>{{ $loop->iteration }}</td>
+
                     <td>
 
-                        {{ $comment->name }}
+                        <strong>{{ $comment->name }}</strong>
+
+                        <br>
+
+                        <small>{{ $comment->email }}</small>
 
                     </td>
 
@@ -53,9 +65,19 @@
 
                     </td>
 
+                    <td width="350">
+
+                        {{ Str::limit($comment->comment, 100) }}
+
+                    </td>
+
                     <td>
 
-                        {{ $comment->comment }}
+                        <span class="badge bg-info">
+
+                            {{ $comment->replies->count() }}
+
+                        </span>
 
                     </td>
 
@@ -79,8 +101,14 @@
 
                     <td>
 
+                        {{ $comment->created_at->format('d M Y') }}
+
+                    </td>
+
+                    <td class="d-flex gap-2">
+
                         @if (!$comment->status)
-                            <form action="{{ route('admin.comments.approve', $comment) }}" method="POST" class="d-inline">
+                            <form method="POST" action="{{ route('admin.comments.approve', $comment) }}" class="d-inline">
 
                                 @csrf
 
@@ -93,12 +121,19 @@
                             </form>
                         @endif
 
+                        <a href="{{ route('admin.comments.reply', $comment) }}" class="btn btn-primary btn-sm">
+
+                            Reply
+
+                        </a>
+
                         <form action="{{ route('admin.comments.destroy', $comment) }}" method="POST" class="d-inline">
 
                             @csrf
+
                             @method('DELETE')
 
-                            <button class="btn btn-danger btn-sm">
+                            <button onclick="return confirm('Delete comment?')" class="btn btn-danger btn-sm">
 
                                 Delete
 
@@ -114,5 +149,10 @@
         </tbody>
 
     </table>
+    <div class="mt-3">
+
+        {{ $comments->links() }}
+
+    </div>
 
 @endsection

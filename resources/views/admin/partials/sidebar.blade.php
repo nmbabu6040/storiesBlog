@@ -158,6 +158,14 @@
             </li>
         @endrole
 
+        <li class="nav-item">
+            <a href="{{ route('admin.advertisements.index') }}"
+                class="nav-link text-white {{ request()->routeIs('admin.advertisements.*') ? 'bg-primary' : '' }}">
+                <i class="fas fa-ad"></i>
+                Advertisements
+            </a>
+        </li>
+
     </ul>
     <div class="mt-auto p-3">
 

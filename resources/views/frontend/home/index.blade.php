@@ -377,7 +377,21 @@
                         </p>
 
                     </div>
+                    @if ($sidebarAd)
+                        <div class="sidebar-widget mb-4">
 
+                            @if ($sidebarAd->type == 'image')
+                                <a href="{{ $sidebarAd->url }}" target="_blank">
+
+                                    <img src="{{ asset('storage/' . $sidebarAd->image) }}" class="img-fluid rounded">
+
+                                </a>
+                            @else
+                                {!! $sidebarAd->code !!}
+                            @endif
+
+                        </div>
+                    @endif
                     <div class="sidebar-widget">
 
                         <h5 class="mb-4">

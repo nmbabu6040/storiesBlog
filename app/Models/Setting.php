@@ -50,6 +50,11 @@ class Setting extends Model
         'email',
         'address',
         'google_map',
-
+        'site_description',
+        'meta_keywords',
+        'travel_category_id',
+        'destination_category_id',
+        'lifestyle_category_id',
+        'photography_category_id',
     ];
 }

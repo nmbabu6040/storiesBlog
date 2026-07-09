@@ -16,11 +16,24 @@ class Comment extends Model
 
         'comment',
 
-        'status'
+        'status',
+
+        'parent_id',
     ];
 
     public function post()
     {
         return $this->belongsTo(Post::class);
+    }
+
+    public function replies()
+    {
+        return $this->hasMany(Comment::class, 'parent_id')
+            ->latest();
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Comment::class, 'parent_id');
     }
 }

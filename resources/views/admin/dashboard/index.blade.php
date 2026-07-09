@@ -8,11 +8,11 @@
 
         <div class="col-md-3 mb-4">
 
-            <div class="card shadow-sm">
+            <div class="card shadow-sm bg-primary">
 
-                <div class="card-body">
+                <div class="card-body text-white fw-bold text-center">
 
-                    <h6>Total Posts</h6>
+                    <h4>Total Posts</h4>
 
                     <h2>{{ $totalPosts }}</h2>
 
@@ -24,11 +24,11 @@
 
         <div class="col-md-3 mb-4">
 
-            <div class="card shadow-sm">
+            <div class="card shadow-sm bg-success">
 
-                <div class="card-body">
+                <div class="card-body text-center text-white">
 
-                    <h6>Featured Posts</h6>
+                    <h4>Featured Posts</h4>
 
                     <h2>{{ $featuredPosts }}</h2>
 
@@ -40,11 +40,11 @@
 
         <div class="col-md-3 mb-4">
 
-            <div class="card shadow-sm">
+            <div class="card shadow-sm bg-secondary">
 
-                <div class="card-body">
+                <div class="card-body text-center text-white">
 
-                    <h6>Published Posts</h6>
+                    <h4>Published Posts</h4>
 
                     <h2>{{ $publishedPosts }}</h2>
 
@@ -56,11 +56,11 @@
 
         <div class="col-md-3 mb-4">
 
-            <div class="card shadow-sm">
+            <div class="card shadow-sm bg-warning">
 
-                <div class="card-body">
+                <div class="card-body text-center text-white">
 
-                    <h6>Pending Posts</h6>
+                    <h4>Pending Posts</h4>
 
                     <h2>{{ $pendingPosts }}</h2>
 
@@ -72,11 +72,11 @@
 
         <div class="col-md-3 mb-4">
 
-            <div class="card shadow-sm">
+            <div class="card shadow-sm bg-danger">
 
-                <div class="card-body">
+                <div class="card-body text-center text-white">
 
-                    <h6>Total Users</h6>
+                    <h4>Total Users</h4>
 
                     <h2>{{ $totalUsers }}</h2>
 
@@ -88,11 +88,11 @@
 
         <div class="col-md-3 mb-4">
 
-            <div class="card shadow-sm">
+            <div class="card shadow-sm bg-info">
 
-                <div class="card-body">
+                <div class="card-body text-center text-white">
 
-                    <h6>Total Comments</h6>
+                    <h4>Total Comments</h4>
 
                     <h2>{{ $totalComments }}</h2>
 
@@ -104,11 +104,11 @@
 
         <div class="col-md-3 mb-4">
 
-            <div class="card shadow-sm">
+            <div class="card shadow-sm bg-success">
 
-                <div class="card-body">
+                <div class="card-body text-center text-white">
 
-                    <h6>Total Subscribers</h6>
+                    <h4>Total Subscribers</h4>
 
                     <h2>{{ $totalSubscribers }}</h2>
 
@@ -120,11 +120,11 @@
 
         <div class="col-md-3 mb-4">
 
-            <div class="card shadow-sm">
+            <div class="card shadow-sm bg-black">
 
-                <div class="card-body">
+                <div class="card-body text-center text-white">
 
-                    <h6>Categories</h6>
+                    <h4>Categories</h4>
 
                     <h2>{{ $totalCategories }}</h2>
 
@@ -136,11 +136,11 @@
 
         <div class="col-md-3 mb-4">
 
-            <div class="card shadow-sm">
+            <div class="card shadow-sm bg-primary">
 
-                <div class="card-body">
+                <div class="card-body text-center text-white">
 
-                    <h6>Messages</h6>
+                    <h4>Messages</h4>
 
                     <h2>{{ $totalMessages }}</h2>
 

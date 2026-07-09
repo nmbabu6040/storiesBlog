@@ -9,6 +9,7 @@ use App\Models\Gallery;
 use Illuminate\Support\Str;
 use App\Models\Comment;
 use App\Models\Setting;
+use App\Models\Advertisement;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -43,45 +44,13 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
-        $travelPosts = Post::with('category')
-            ->where('status', 1)
-            ->where('review_status', 'approved')
-            ->when($setting?->travel_category_id, function ($query) use ($setting) {
-                $query->where('category_id', $setting->travel_category_id);
-            })
-            ->latest()
-            ->take(4)
-            ->get();
+        $travelPosts = $this->getCategoryPosts('travel', 4);
 
-        $destinationPosts = Post::with('category')
-            ->where('status', 1)
-            ->where('review_status', 'approved')
-            ->when($setting?->destination_category_id, function ($query) use ($setting) {
-                $query->where('category_id', $setting->destination_category_id);
-            })
-            ->latest()
-            ->take(3)
-            ->get();
+        $destinationPosts = $this->getCategoryPosts('destination');
 
-        $lifestylePosts = Post::with('category')
-            ->where('status', 1)
-            ->where('review_status', 'approved')
-            ->when($setting?->lifestyle_category_id, function ($query) use ($setting) {
-                $query->where('category_id', $setting->lifestyle_category_id);
-            })
-            ->latest()
-            ->take(3)
-            ->get();
+        $lifestylePosts = $this->getCategoryPosts('lifestyle');
 
-        $photographyPosts = Post::with('category')
-            ->where('status', 1)
-            ->where('review_status', 'approved')
-            ->when($setting?->photography_category_id, function ($query) use ($setting) {
-                $query->where('category_id', $setting->photography_category_id);
-            })
-            ->latest()
-            ->take(3)
-            ->get();
+        $photographyPosts = $this->getCategoryPosts('photography');
 
         $galleryImages = Gallery::where('status', 1)
             ->latest()
@@ -101,6 +70,12 @@ class HomeController extends Controller
             )
         );
 
+        $headerAd = Advertisement::active('header')->first();
+
+        $sidebarAd = Advertisement::active('sidebar')->first();
+
+        $footerAd = Advertisement::active('footer')->first();
+
         return view(
             'frontend.home.index',
             compact(
@@ -115,7 +90,10 @@ class HomeController extends Controller
                 'galleryImages',
                 'latestComments',
                 'setting',
-                'heroTypes'
+                'heroTypes',
+                'headerAd',
+                'sidebarAd',
+                'footerAd',
             )
         );
     }
@@ -141,44 +119,33 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
-        $recentPosts = Post::where('status', 1)
-            ->latest()
-            ->take(5)
-            ->get();
+        $recentPosts = $this->getRecentPosts();
 
-        $popularPosts = Post::where('status', 1)
-            ->orderByDesc('views')
-            ->take(5)
-            ->get();
+        $popularPosts = $this->getPopularPosts();
 
 
 
-        $destinationPosts = Post::where('status', 1)
-            ->latest()
-            ->take(3)
-            ->get();
+        $setting = Setting::first();
 
-        $lifestylePosts = Post::where('status', 1)
-            ->latest()
-            ->skip(3)
-            ->take(3)
-            ->get();
+        $destinationPosts = $this->getCategoryPosts('destination');
 
-        $photographyPosts = Post::where('status', 1)
-            ->latest()
-            ->skip(6)
-            ->take(3)
-            ->get();
+        $lifestylePosts = $this->getCategoryPosts('lifestyle');
+
+        $photographyPosts = $this->getCategoryPosts('photography');
 
         $categories = Category::where('status', 1)
             ->latest()
             ->take(6)
             ->get();
+        $headerAd = Advertisement::active('header')->first();
 
-        $setting = Setting::first();
+        $sidebarAd = Advertisement::active('sidebar')->first();
 
+        $beforePostAd = Advertisement::active('before_post')->first();
 
+        $afterPostAd = Advertisement::active('after_post')->first();
 
+        $footerAd = Advertisement::active('footer')->first();
         return view(
             'frontend.post.show',
             compact(
@@ -191,6 +158,11 @@ class HomeController extends Controller
                 'photographyPosts',
                 'categories',
                 'setting',
+                'headerAd',
+                'sidebarAd',
+                'beforePostAd',
+                'afterPostAd',
+                'footerAd'
             )
         );
     }
@@ -238,5 +210,36 @@ class HomeController extends Controller
                 'keyword'
             )
         );
+    }
+
+    private function getCategoryPosts($slug, $limit = 3)
+    {
+        return Post::with('category')
+            ->where('status', 1)
+            ->where('review_status', 'approved')
+            ->whereHas('category', function ($query) use ($slug) {
+                $query->where('slug', $slug);
+            })
+            ->latest()
+            ->take($limit)
+            ->get();
+    }
+
+    private function getPopularPosts($limit = 5)
+    {
+        return Post::where('status', 1)
+            ->where('review_status', 'approved')
+            ->orderByDesc('views')
+            ->take($limit)
+            ->get();
+    }
+
+    private function getRecentPosts($limit = 5)
+    {
+        return Post::where('status', 1)
+            ->where('review_status', 'approved')
+            ->latest()
+            ->take($limit)
+            ->get();
     }
 }

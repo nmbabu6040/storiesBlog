@@ -21,7 +21,13 @@
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs5.min.css" rel="stylesheet">
+
+
 
 </head>
 
@@ -50,10 +56,10 @@
     </div>
 
 
-    {{-- <script src="https://cdn.ckeditor.com/4.25.1-lts/full/ckeditor.js"></script> --}}
-    {{-- <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script> --}}
-    <script src="https://cdn.ckeditor.com/4.22.0/full/ckeditor.js"></script>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs5.min.js"></script>
     @stack('scripts')
 </body>
 

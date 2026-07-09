@@ -64,6 +64,8 @@
                         Header Logo
                     </label>
 
+                    <img src="{{ asset('storage/' . $setting->header_logo) }}" width="100" class="img-thumbnail">
+
                     <input type="file" name="header_logo" class="form-control">
 
                 </div>
@@ -74,6 +76,8 @@
                         Footer Logo
                     </label>
 
+                    <img src="{{ asset('storage/' . $setting->footer_logo) }}" width="100" class="img-thumbnail">
+
                     <input type="file" name="footer_logo" class="form-control">
 
                 </div>
@@ -83,6 +87,8 @@
                     <label class="form-label">
                         Favicon
                     </label>
+
+                    <img src="{{ asset('storage/' . $setting->favicon) }}" width="40" class="img-thumbnail">
 
                     <input type="file" name="favicon" class="form-control">
 
@@ -103,6 +109,8 @@
                     <label class="form-label">
                         Author Image
                     </label>
+
+                    <img src="{{ asset('storage/' . $setting->author_image) }}" width="80" class="img-thumbnail">
 
                     <input type="file" name="author_image" class="form-control">
 
@@ -169,6 +177,7 @@
                         Hero Image
                     </label>
 
+                    <img src="{{ asset('storage/' . $setting->hero_image) }}" width="180" class="img-thumbnail">
                     <input type="file" name="hero_image" class="form-control">
 
                 </div>

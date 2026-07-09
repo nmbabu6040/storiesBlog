@@ -16,7 +16,8 @@ use App\Http\Controllers\Frontend\CommentController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Frontend\PageController as FrontendPageController;
-use App\Http\Controllers\Admin\CKEditorController;
+use App\Http\Controllers\Admin\SummernoteController;
+use App\Http\Controllers\Admin\AdvertisementController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
@@ -64,6 +65,14 @@ Route::name('frontend.')->group(function () {
     Route::post('/comment-submit', [CommentController::class, 'store'])
         ->middleware('auth')
         ->name('comment.store');
+    Route::get('/comments/{post}', function (\App\Models\Post $post) {
+
+        return view(
+            'frontend.partials.comments',
+            compact('post')
+        );
+    })->name('comments.load');
+
     Route::get('/{slug}', [FrontendPageController::class, 'show'])
         ->where('slug', '^(?!login|register|forgot-password|reset-password|verify-email|email|confirm-password|logout|profile|admin).*$')
         ->name('page');
@@ -112,6 +121,14 @@ Route::prefix('admin')
             ->name('comments.approve')
             ->middleware('permission:manage-comments');
 
+        Route::get('/comments/{comment}/reply', [AdminCommentController::class, 'reply'])
+            ->name('comments.reply');
+
+        Route::post('/comments/{comment}/reply', [AdminCommentController::class, 'replyStore'])
+            ->name('comments.reply.store');
+
+
+
         Route::delete('/comments/{comment}', [AdminCommentController::class, 'destroy'])
             ->name('comments.destroy')
             ->middleware('permission:manage-comments');
@@ -143,8 +160,11 @@ Route::prefix('admin')
         )->name('posts.approve');
 
         Route::resource('media', \App\Http\Controllers\Admin\MediaController::class);
-        Route::post('/ckeditor/upload', [CKEditorController::class, 'upload'])
-            ->name('ckeditor.upload');
+        Route::post('/summernote/upload', [App\Http\Controllers\Admin\SummernoteController::class, 'upload'])
+            ->name('summernote.upload');
+
+        Route::resource('advertisements', AdvertisementController::class)
+            ->middleware('permission:manage-settings');
     });
 
 Route::middleware('auth')->group(function () {
@@ -153,12 +173,5 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Route::prefix('admin')->middleware(['auth', 'role:Super Admin|Admin'])->name('admin.')->group(function () {
-//     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)
-//         ->middleware('role:Super Admin');
-//     Route::resource('settings', SettingController::class)
-//         ->middleware('role:Super Admin');
-//     Route::resource('posts', PostController::class)
-//         ->middleware('role:Super Admin|Admin|Editor|Author');
-// });
+
 require __DIR__ . '/auth.php';

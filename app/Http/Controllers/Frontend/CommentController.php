@@ -12,9 +12,11 @@ class CommentController extends Controller
     {
         $request->validate([
 
-            'post_id' => 'required|exists:posts,id',
+            'post_id'   => 'required|exists:posts,id',
 
-            'comment' => 'required|string|max:2000'
+            'parent_id' => 'nullable|exists:comments,id',
+
+            'comment'   => 'required|string|max:2000',
 
         ]);
 
@@ -35,17 +37,27 @@ class CommentController extends Controller
 
         Comment::create([
 
-            'post_id' => $request->post_id,
+            'post_id'   => $request->post_id,
 
-            'name' => $user->name,
+            'parent_id' => $request->parent_id,
 
-            'email' => $user->email,
+            'name'      => $user->name,
 
-            'comment' => $request->comment,
+            'email'     => $user->email,
 
-            'status' => 0,
+            'comment'   => $request->comment,
+
+            'status'    => 0,
 
         ]);
+
+        if ($request->ajax()) {
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Your comment has been submitted and is awaiting approval.'
+            ]);
+        }
 
         return back()->with(
             'success',

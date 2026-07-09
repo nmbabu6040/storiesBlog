@@ -137,39 +137,60 @@
     </div>
 
 @endsection
-{{-- @push('scripts')
+@push('scripts')
     <script>
-        ClassicEditor
-            .create(document.querySelector('#content'), {
+        $(function() {
 
-                simpleUpload: {
+            $('#content').summernote({
 
-                    uploadUrl: "{{ route('admin.ckeditor.upload') }}",
+                height: 500,
 
-                    headers: {
+                callbacks: {
 
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    onImageUpload: function(files) {
+
+                        uploadImage(files[0]);
 
                     }
 
                 }
 
-            })
-            .catch(error => console.error(error));
-    </script>
-@endpush --}}
-@push('scripts')
-    <script>
-        window.addEventListener('load', function() {
+            });
 
-            const textarea = document.getElementById('content');
+            function uploadImage(file) {
 
-            console.log(textarea);
+                let data = new FormData();
 
-            if (textarea) {
+                data.append('file', file);
 
-                CKEDITOR.replace(textarea, {
-                    height: 500
+                data.append('_token', '{{ csrf_token() }}');
+
+                $.ajax({
+
+                    url: "{{ route('admin.summernote.upload') }}",
+
+                    method: "POST",
+
+                    data: data,
+
+                    processData: false,
+
+                    contentType: false,
+
+                    success: function(res) {
+
+                        $('#content').summernote('insertImage', res.location);
+
+                    },
+
+                    error: function(err) {
+
+                        console.log(err);
+
+                        alert('Image upload failed.');
+
+                    }
+
                 });
 
             }

@@ -35,7 +35,16 @@ class Post extends Model
 
     public function comments()
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Comment::class)
+            ->whereNull('parent_id')
+            ->where('status', 1)
+            ->with([
+                'replies' => function ($query) {
+                    $query->where('status', 1)
+                        ->latest();
+                }
+            ])
+            ->latest();
     }
 
     public function author()

@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Comment;
+use App\Models\Gallery;
+use App\Models\Page;
+use App\Models\Setting;
+use App\Models\Advertisement;
 use App\Models\Post;
 use App\Models\User;
 
@@ -152,6 +157,7 @@ class PostController extends Controller
             'content' => 'required',
         ]);
 
+        // thumnail part
         $thumbnail = $post->thumbnail;
 
         if ($request->hasFile('thumbnail')) {
@@ -167,14 +173,25 @@ class PostController extends Controller
                 ->store('posts', 'public');
         }
 
+        // slug
         $slug = Str::slug($request->title);
 
-        $count = Post::where('slug', 'LIKE', "{$slug}%")
-            ->where('id', '!=', $post->id)
-            ->count();
+        if ($post->title !== $request->title) {
 
-        if ($count > 0) {
-            $slug = $slug . '-' . ($count + 1);
+            $originalSlug = $slug;
+            $i = 1;
+
+            while (
+                Post::where('slug', $slug)
+                ->where('id', '!=', $post->id)
+                ->exists()
+            ) {
+                $slug = $originalSlug . '-' . $i;
+                $i++;
+            }
+        } else {
+
+            $slug = $post->slug;
         }
 
         $post->update([
@@ -182,8 +199,6 @@ class PostController extends Controller
             'category_id' => $request->category_id,
 
             'title' => $request->title,
-
-            // 'slug' => Str::slug($request->title),
 
             'slug' => $slug,
 

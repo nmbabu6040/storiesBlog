@@ -6,6 +6,24 @@
 
 @section('meta_keywords', $post->meta_keywords)
 
+@if ($beforePostAd)
+
+    <div class="my-4 text-center">
+
+        @if ($beforePostAd->type == 'image')
+            <a href="{{ $beforePostAd->url }}" target="_blank">
+
+                <img src="{{ asset('storage/' . $beforePostAd->image) }}" class="img-fluid">
+
+            </a>
+        @else
+            {!! $beforePostAd->code !!}
+        @endif
+
+    </div>
+
+@endif
+
 @section('content')
 
 
@@ -161,11 +179,14 @@
 
                     @auth
 
-                        <form action="{{ route('frontend.comment.store') }}" method="POST">
+                        <div id="commentMessage"></div>
+                        <form id="commentForm" action="{{ route('frontend.comment.store') }}" method="POST">
 
                             @csrf
 
                             <input type="hidden" name="post_id" value="{{ $post->id }}">
+
+                            <input type="hidden" name="parent_id" id="parent_id" value="">
 
                             <div class="mb-3">
 
@@ -174,6 +195,8 @@
                                     Your Comment
 
                                 </label>
+
+                                <div id="replyInfo" class="alert alert-info d-none mb-3"></div>
 
                                 <textarea name="comment" rows="5" class="form-control" placeholder="Write your comment..." required>{{ old('comment') }}</textarea>
 
@@ -228,7 +251,7 @@
                 </div>
 
                 {{-- comment part end start --}}
-                <div class="sidebar-widget mt-5">
+                <div class="sidebar-widget mt-5" id="commentsWrapper">
 
                     <h4 class="mb-4">
 
@@ -236,45 +259,7 @@
 
                     </h4>
 
-                    @forelse($post->comments as $comment)
-                        <div class="mb-4">
-
-                            <div class="d-flex justify-content-between align-items-center">
-
-                                <h6 class="text-primary mb-0">
-
-                                    {{ $comment->name }}
-
-                                </h6>
-
-                                <small class="text-muted">
-
-                                    {{ $comment->created_at->format('d M, Y') }}
-
-                                </small>
-
-                            </div>
-
-                            <p class="mt-3 mb-0">
-
-                                {{ $comment->comment }}
-
-                            </p>
-
-                        </div>
-
-                        @if (!$loop->last)
-                            <hr>
-                        @endif
-
-                    @empty
-
-                        <div class="alert alert-light border">
-
-                            No comments yet. Be the first to comment.
-
-                        </div>
-                    @endforelse
+                    @include('frontend.partials.comments')
 
                 </div>
 
@@ -464,6 +449,23 @@
     {{-- categories section  --}}
     @include('frontend.partials.category-slider')
 @endsection
+@if ($afterPostAd)
+
+    <div class="my-4 text-center">
+
+        @if ($afterPostAd->type == 'image')
+            <a href="{{ $afterPostAd->url }}" target="_blank">
+
+                <img src="{{ asset('storage/' . $afterPostAd->image) }}" class="img-fluid">
+
+            </a>
+        @else
+            {!! $afterPostAd->code !!}
+        @endif
+
+    </div>
+
+@endif
 
 @push('scripts')
     <script>
@@ -488,6 +490,110 @@
                     items: 5
                 }
             }
+        });
+    </script>
+
+    <script>
+        $('#commentForm').submit(function(e) {
+
+            e.preventDefault();
+
+            let form = $(this);
+
+            $.ajax({
+
+                url: form.attr('action'),
+
+                method: 'POST',
+
+                data: form.serialize(),
+
+                success: function(res) {
+
+                    $('#commentMessage').html(
+
+                        '<div class="alert alert-success">' + res.message + '</div>'
+
+                    );
+
+                    form.trigger('reset');
+
+                    $('#parent_id').val('');
+
+                    $('#replyInfo').addClass('d-none');
+
+                },
+
+                error: function(xhr) {
+
+                    $('#commentMessage').html(
+
+                        '<div class="alert alert-danger">Something went wrong.</div>'
+
+                    );
+
+                }
+
+            });
+
+        });
+    </script>
+
+    <script>
+        function loadComments() {
+
+            $("#commentsList").load(
+
+                "{{ route('frontend.comments.load', $post->id) }}"
+
+            );
+
+        }
+
+        setInterval(loadComments, 30000);
+    </script>
+
+    <script>
+        document.querySelectorAll('.reply-btn').forEach(button => {
+
+            button.addEventListener('click', function() {
+
+                document.getElementById('parent_id').value = this.dataset.id;
+
+                let info = document.getElementById('replyInfo');
+
+                info.classList.remove('d-none');
+
+                info.innerHTML =
+                    'Replying to <strong>' + this.dataset.name +
+                    '</strong> <a href="#" id="cancelReply" class="ms-2">Cancel</a>';
+
+                document.querySelector('textarea[name=comment]').focus();
+
+                window.scrollTo({
+
+                    top: document.querySelector('textarea[name=comment]').offsetTop - 120,
+
+                    behavior: 'smooth'
+
+                });
+
+            });
+
+        });
+
+        document.addEventListener('click', function(e) {
+
+            if (e.target.id === 'cancelReply') {
+
+                e.preventDefault();
+
+                document.getElementById('parent_id').value = '';
+
+                document.getElementById('replyInfo').classList.add('d-none');
+
+            }
+
         });
     </script>
 @endpush

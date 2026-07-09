@@ -16,30 +16,44 @@ class PageController extends Controller
             ->where('status', 1)
             ->firstOrFail();
 
+        $posts = Post::where('status', 1)
+            ->where('review_status', 'approved')
+            ->latest()
+            ->paginate(9);
+
         $setting = Setting::first();
 
-        $destinationPosts = Post::where('status', 1)
-            ->latest()
-            ->take(3)
-            ->get();
+        $destinationPosts = $this->getCategoryPosts('destination');
 
-        $lifestylePosts = Post::where('status', 1)
-            ->latest()
-            ->skip(3)
-            ->take(3)
-            ->get();
+        $lifestylePosts = $this->getCategoryPosts('lifestyle');
 
-        $photographyPosts = Post::where('status', 1)
-            ->latest()
-            ->skip(6)
-            ->take(3)
-            ->get();
+        $photographyPosts = $this->getCategoryPosts('photography');
 
         $categories = Category::where('status', 1)
             ->latest()
             ->take(6)
             ->get();
 
-        return view('frontend.pages.show', compact('page', 'setting', 'destinationPosts', 'lifestylePosts', 'photographyPosts', 'categories'));
+        $heroTypes = array_filter(
+            array_map(
+                'trim',
+                explode(',', $setting->hero_type_text ?? '')
+            )
+        );
+
+        return view('frontend.pages.show', compact('page', 'setting', 'destinationPosts', 'lifestylePosts', 'photographyPosts', 'categories', 'heroTypes', 'posts'));
+    }
+
+    private function getCategoryPosts($slug, $limit = 3)
+    {
+        return Post::with('category')
+            ->where('status', 1)
+            ->where('review_status', 'approved')
+            ->whereHas('category', function ($query) use ($slug) {
+                $query->where('slug', $slug);
+            })
+            ->latest()
+            ->take($limit)
+            ->get();
     }
 }

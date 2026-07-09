@@ -1,5 +1,21 @@
-<header>
+@if ($headerAd)
 
+    <div class="container py-3 text-center">
+
+        @if ($headerAd->type == 'image')
+            <a href="{{ $headerAd->url }}" target="_blank">
+
+                <img src="{{ asset('storage/' . $headerAd->image) }}" class="img-fluid">
+
+            </a>
+        @else
+            {!! $headerAd->code !!}
+        @endif
+
+    </div>
+
+@endif
+<header>
     <div class="top-header">
 
         <div class="container">
@@ -50,13 +66,13 @@
 
             <div class="collapse navbar-collapse" id="mainMenu">
 
-                <ul class="navbar-nav me-auto">
+                {{-- <ul class="navbar-nav me-auto">
 
                     @foreach ($menus as $menu)
                         @if ($menu->children->count())
                             <li class="nav-item dropdown">
 
-                                <a class="nav-link dropdown-toggle" href="#" role="button"
+                                <a class="nav-link dropdown-toggle " href="#" role="button"
                                     data-bs-toggle="dropdown" aria-expanded="false">
 
                                     {{ $menu->name }}
@@ -82,7 +98,75 @@
                         @else
                             <li class="nav-item">
 
-                                <a class="nav-link" href="{{ $menu->link }}" target="{{ $menu->target }}">
+                                <a class="nav-link {{ request()->routeIs($menu->slug) ? 'active' : '' }}"
+                                    href="{{ $menu->link }}" target="{{ $menu->target }}">
+
+                                    {{ $menu->name }}
+
+                                </a>
+
+                            </li>
+                        @endif
+                    @endforeach
+
+                </ul> --}}
+
+                <ul class="navbar-nav me-auto">
+
+                    @foreach ($menus as $menu)
+                        @php
+                            $path = trim(parse_url($menu->link, PHP_URL_PATH), '/');
+
+                            $isActive = $path === '' ? request()->routeIs('frontend.home') : request()->is($path);
+
+                            $hasActiveChild = $menu->children->contains(function ($child) {
+                                $childPath = trim(parse_url($child->link, PHP_URL_PATH), '/');
+
+                                return $childPath === ''
+                                    ? request()->routeIs('frontend.home')
+                                    : request()->is($childPath);
+                            });
+                        @endphp
+
+                        @if ($menu->children->count())
+                            <li class="nav-item dropdown">
+
+                                <a class="nav-link dropdown-toggle {{ $hasActiveChild ? 'active' : '' }}" href="#"
+                                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+                                    {{ $menu->name }}
+
+                                </a>
+
+                                <ul class="dropdown-menu">
+
+                                    @foreach ($menu->children as $child)
+                                        @php
+                                            $childActive =
+                                                request()->fullUrlIs($child->link) ||
+                                                request()->is(ltrim(parse_url($child->link, PHP_URL_PATH), '/'));
+                                        @endphp
+
+                                        <li>
+
+                                            <a class="dropdown-item {{ $childActive ? 'active' : '' }}"
+                                                href="{{ $child->link }}" target="{{ $child->target }}">
+
+                                                {{ $child->name }}
+
+                                            </a>
+
+                                        </li>
+                                    @endforeach
+
+                                </ul>
+
+                            </li>
+                        @else
+                            <li class="nav-item">
+
+                                <a class="nav-link {{ $isActive ? 'active' : '' }}" href="{{ $menu->link }}"
+                                    target="{{ $menu->target }}">
 
                                     {{ $menu->name }}
 

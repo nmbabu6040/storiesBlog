@@ -8,11 +8,19 @@
 
         <h4>Advertisements</h4>
 
-        <a href="{{ route('admin.advertisements.create') }}" class="btn btn-primary">
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.advertisements.create') }}" class="btn btn-primary">
 
-            Add Advertisement
+                Add Advertisement
 
-        </a>
+            </a>
+
+            <a href="{{ route('admin.advertisements.trash') }}" class="btn btn-warning">
+
+                Trash
+
+            </a>
+        </div>
 
     </div>
 

@@ -93,21 +93,31 @@ class UserController extends Controller
             ->with('success', 'User updated successfully.');
     }
 
+    public function trash()
+    {
+        $users = User::onlyTrashed()->latest('deleted_at')->paginate(10);
+
+        return view('admin.user.trash', compact('users'));
+    }
+
+    public function restore($id)
+    {
+        User::onlyTrashed()->findOrFail($id)->restore();
+
+        return back()->with('success', 'User restored.');
+    }
+
+    public function forceDelete($id)
+    {
+        User::onlyTrashed()->findOrFail($id)->forceDelete();
+
+        return back()->with('success', 'User permanently deleted.');
+    }
+
     public function destroy(User $user)
     {
-        if ($user->hasRole('Super Admin')) {
-
-            return back()->with(
-                'error',
-                'Super Admin cannot be deleted.'
-            );
-        }
-
         $user->delete();
 
-        return back()->with(
-            'success',
-            'User deleted successfully.'
-        );
+        return back()->with('success', 'User moved to trash.');
     }
 }

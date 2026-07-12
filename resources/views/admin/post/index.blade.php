@@ -14,11 +14,19 @@
 
         <h3>Posts</h3>
 
-        <a href="{{ route('admin.posts.create') }}" class="btn btn-primary">
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.posts.create') }}" class="btn btn-primary">
 
-            Add Post
+                Add Post
 
-        </a>
+            </a>
+
+            <a href="{{ route('admin.posts.trash') }}" class="btn btn-warning">
+
+                Trash
+
+            </a>
+        </div>
 
     </div>
 

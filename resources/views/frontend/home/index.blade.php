@@ -46,6 +46,9 @@
 
                         @csrf
 
+                        <input type="text" name="name" class="form-control nameInput" placeholder="Your Name"
+                            required>
+
                         <input type="email" name="email" class="form-control bg-white font-small"
                             placeholder="Enter your email" required>
 

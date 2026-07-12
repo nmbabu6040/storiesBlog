@@ -93,14 +93,37 @@ class AdvertisementController extends Controller
             ->with('success', 'Advertisement updated successfully.');
     }
 
-    public function destroy(Advertisement $advertisement)
+    public function trash()
     {
+        $advertisements = Advertisement::onlyTrashed()->latest('deleted_at')->paginate(10);
+
+        return view('admin.advertisement.trash', compact('advertisements'));
+    }
+
+    public function restore($id)
+    {
+        Advertisement::onlyTrashed()->findOrFail($id)->restore();
+
+        return back()->with('success', 'Advertisement restored.');
+    }
+
+    public function forceDelete($id)
+    {
+        $advertisement = Advertisement::onlyTrashed()->findOrFail($id);
+
         if ($advertisement->image) {
             Storage::disk('public')->delete($advertisement->image);
         }
 
+        $advertisement->forceDelete();
+
+        return back()->with('success', 'Advertisement permanently deleted.');
+    }
+
+    public function destroy(Advertisement $advertisement)
+    {
         $advertisement->delete();
 
-        return back()->with('success', 'Advertisement deleted successfully.');
+        return back()->with('success', 'Advertisement moved to trash.');
     }
 }

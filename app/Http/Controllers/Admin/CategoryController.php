@@ -111,6 +111,28 @@ class CategoryController extends Controller
             );
     }
 
+
+
+    public function trash()
+    {
+        $categories = Category::onlyTrashed()
+            ->latest('deleted_at')
+            ->paginate(10);
+
+        return view('admin.category.trash', compact('categories'));
+    }
+
+    public function restore($id)
+    {
+        Category::onlyTrashed()
+            ->findOrFail($id)
+            ->restore();
+
+        return redirect()
+            ->route('admin.categories.trash')
+            ->with('success', 'Post restored successfully.');
+    }
+
     public function destroy(Category $category)
     {
         $category->delete();
@@ -119,7 +141,22 @@ class CategoryController extends Controller
             ->route('admin.categories.index')
             ->with(
                 'success',
-                'Category Deleted Successfully'
+                'Category moved to trash.'
+            );
+    }
+
+    public function forceDelete($id)
+    {
+        $category = Category::onlyTrashed()
+            ->findOrFail($id);
+
+        $category->forceDelete();
+
+        return redirect()
+            ->route('admin.categories.trash')
+            ->with(
+                'success',
+                'Category permanently deleted.'
             );
     }
 }

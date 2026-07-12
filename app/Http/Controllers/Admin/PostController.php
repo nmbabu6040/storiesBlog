@@ -224,26 +224,55 @@ class PostController extends Controller
             );
     }
 
+    public function trash()
+    {
+        $posts = Post::onlyTrashed()
+            ->with('category')
+            ->latest('deleted_at')
+            ->paginate(10);
+
+        return view('admin.post.trash', compact('posts'));
+    }
+
+    public function restore($id)
+    {
+        Post::onlyTrashed()
+            ->findOrFail($id)
+            ->restore();
+
+        return redirect()
+            ->route('admin.posts.trash')
+            ->with('success', 'Post restored successfully.');
+    }
+
     public function destroy(Post $post)
     {
-
         $this->authorize('delete', $post);
-
-        if ($post->thumbnail) {
-
-            Storage::disk('public')
-                ->delete($post->thumbnail);
-        }
 
         $post->delete();
 
         return redirect()
             ->route('admin.posts.index')
-            ->with(
-                'success',
-                'Post Deleted Successfully'
-            );
+            ->with('success', 'Post moved to trash successfully.');
     }
+
+    public function forceDelete($id)
+    {
+        $post = Post::onlyTrashed()->findOrFail($id);
+
+        if ($post->thumbnail) {
+
+            Storage::disk('public')->delete($post->thumbnail);
+        }
+
+        $post->forceDelete();
+
+        return redirect()
+            ->route('admin.posts.trash')
+            ->with('success', 'Post permanently deleted.');
+    }
+
+
 
     public function approve(Post $post)
     {

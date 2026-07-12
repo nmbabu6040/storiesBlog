@@ -8,6 +8,7 @@ use App\Models\Setting;
 use App\Models\Menu;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use App\Models\Advertisement;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -78,5 +79,13 @@ class AppServiceProvider extends ServiceProvider
             'siteSetting',
             Setting::first()
         );
+
+        View::share([
+            'headerAd' => Advertisement::active('header')->first(),
+            'sidebarAd' => Advertisement::active('sidebar')->first(),
+            'beforePostAd' => Advertisement::active('before_post')->first(),
+            'afterPostAd' => Advertisement::active('after_post')->first(),
+            'footerAd' => Advertisement::active('footer')->first(),
+        ]);
     }
 }

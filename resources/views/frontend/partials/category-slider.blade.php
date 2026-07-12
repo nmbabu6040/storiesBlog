@@ -1,5 +1,5 @@
 {{-- categories section  --}}
-<section class="categories_section py-5">
+<section class="categories_section pt-4">
 
     <div class="container">
 

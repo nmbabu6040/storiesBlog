@@ -8,11 +8,19 @@
 
         <h4>Pages</h4>
 
-        <a href="{{ route('admin.pages.create') }}" class="btn btn-primary">
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.pages.create') }}" class="btn btn-primary">
 
-            Add Page
+                Add Page
 
-        </a>
+            </a>
+
+            <a href="{{ route('admin.pages.trash') }}" class="btn btn-warning">
+
+                Trash
+
+            </a>
+        </div>
 
     </div>
 

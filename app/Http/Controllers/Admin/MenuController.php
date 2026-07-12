@@ -239,13 +239,44 @@ class MenuController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    // public function trash()
+    // {
+    //     $menus = Menu::onlyTrashed()
+    //         ->latest('deleted_at')
+    //         ->paginate(10);
+
+    //     return view('admin.menus.trash', compact('menus'));
+    // }
+
+    public function trash()
+    {
+        $trashMenus = Menu::onlyTrashed()
+            ->latest('deleted_at')
+            ->paginate(10);
+
+        // dd(get_class($menus));
+
+        return view('admin.menus.trash', compact('trashMenus'));
+    }
+
+    public function restore($id)
+    {
+        Menu::onlyTrashed()->findOrFail($id)->restore();
+
+        return back()->with('success', 'Menu restored.');
+    }
+
+    public function forceDelete($id)
+    {
+        Menu::onlyTrashed()->findOrFail($id)->forceDelete();
+
+        return back()->with('success', 'Menu permanently deleted.');
+    }
+
     public function destroy(Menu $menu)
     {
         $menu->delete();
 
-        return back()->with(
-            'success',
-            'Menu Deleted Successfully'
-        );
+        return back()->with('success', 'Menu moved to trash.');
     }
 }

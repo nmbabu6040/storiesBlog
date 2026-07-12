@@ -16,47 +16,19 @@
 
 @endif
 <header>
-    <div class="top-header">
+    <nav class="navbar navbar-expand-lg bg-white py-3">
 
         <div class="container">
 
-            <div class="d-flex justify-content-between align-items-center py-4">
+            <a href="{{ route('frontend.home') }}" class="logo">
 
-                <a href="{{ route('frontend.home') }}" class="logo">
+                @if (!empty($siteSetting->header_logo))
+                    <img src="{{ asset('storage/' . $siteSetting->header_logo) }}" alt="Logo" height="50">
+                @else
+                    {{ $siteSetting->site_name ?? 'Stories Blog' }}
+                @endif
 
-                    @if (!empty($siteSetting->header_logo))
-                        <img src="{{ asset('storage/' . $siteSetting->header_logo) }}" alt="Logo" height="50">
-                    @else
-                        {{ $siteSetting->site_name ?? 'Stories Blog' }}
-                    @endif
-
-                </a>
-
-                <div class="top-menu d-flex align-items-center">
-
-                    <a href="#">Layouts</a>
-
-                    <a href="#">UI Document</a>
-
-                    <a href="#">Search</a>
-
-                    <a href="#" class="buy-btn">
-
-                        Buy Now
-
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <nav class="navbar navbar-expand-lg bg-white border-top border-bottom">
-
-        <div class="container">
+            </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainMenu">
 
@@ -66,52 +38,7 @@
 
             <div class="collapse navbar-collapse" id="mainMenu">
 
-                {{-- <ul class="navbar-nav me-auto">
-
-                    @foreach ($menus as $menu)
-                        @if ($menu->children->count())
-                            <li class="nav-item dropdown">
-
-                                <a class="nav-link dropdown-toggle " href="#" role="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-
-                                    {{ $menu->name }}
-
-                                </a>
-
-                                <ul class="dropdown-menu">
-
-                                    @foreach ($menu->children as $child)
-                                        <li>
-                                            <a class="dropdown-item" href="{{ $child->link }}"
-                                                target="{{ $child->target }}">
-
-                                                {{ $child->name }}
-
-                                            </a>
-                                        </li>
-                                    @endforeach
-
-                                </ul>
-
-                            </li>
-                        @else
-                            <li class="nav-item">
-
-                                <a class="nav-link {{ request()->routeIs($menu->slug) ? 'active' : '' }}"
-                                    href="{{ $menu->link }}" target="{{ $menu->target }}">
-
-                                    {{ $menu->name }}
-
-                                </a>
-
-                            </li>
-                        @endif
-                    @endforeach
-
-                </ul> --}}
-
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav m-auto">
 
                     @foreach ($menus as $menu)
                         @php

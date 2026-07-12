@@ -12,9 +12,15 @@
 
         <h4>Menus</h4>
 
-        <a href="{{ route('admin.menus.create') }}" class="btn btn-primary">
-            Add Menu
-        </a>
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.menus.create') }}" class="btn btn-primary">
+                Add Menu
+            </a>
+
+            <a href="{{ route('admin.menus.trash') }}" class="btn btn-warning">
+                Trash
+            </a>
+        </div>
 
     </div>
 

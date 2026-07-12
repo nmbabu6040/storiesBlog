@@ -16,11 +16,19 @@
 
         <h3>Categories</h3>
 
-        <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
+        <div class='d-flex gap-2'>
+            <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
 
-            Add Category
+                Add Category
 
-        </a>
+            </a>
+
+            <a href="{{ route('admin.categories.trash') }}" class="btn btn-warning">
+
+                Trash
+
+            </a>
+        </div>
 
     </div>
 

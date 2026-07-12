@@ -115,13 +115,60 @@ class PageController extends Controller
 
     public function destroy(Page $page)
     {
-        if ($page->banner_image && Storage::disk('public')->exists($page->banner_image)) {
-
-            Storage::disk('public')->delete($page->banner_image);
-        }
-
         $page->delete();
 
-        return back()->with('success', 'Page Deleted Successfully');
+        return redirect()
+            ->route('admin.pages.index')
+            ->with(
+                'success',
+                'Page moved to trash.'
+            );
+    }
+
+    public function trash()
+    {
+        $pages = Page::onlyTrashed()
+            ->latest('deleted_at')
+            ->paginate(10);
+
+        return view(
+            'admin.pages.trash',
+            compact('pages')
+        );
+    }
+
+    public function restore($id)
+    {
+        Page::onlyTrashed()
+            ->findOrFail($id)
+            ->restore();
+
+        return redirect()
+            ->route('admin.pages.trash')
+            ->with(
+                'success',
+                'Page restored successfully.'
+            );
+    }
+
+    public function forceDelete($id)
+    {
+        $page = Page::onlyTrashed()
+            ->findOrFail($id);
+
+        if ($page->banner_image) {
+
+            Storage::disk('public')
+                ->delete($page->banner_image);
+        }
+
+        $page->forceDelete();
+
+        return redirect()
+            ->route('admin.pages.trash')
+            ->with(
+                'success',
+                'Page permanently deleted.'
+            );
     }
 }

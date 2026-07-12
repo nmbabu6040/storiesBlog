@@ -4,11 +4,21 @@
 
 @section('content')
 
-    <a href="{{ route('admin.galleries.create') }}" class="btn btn-primary mb-3">
+    <div class="d-flex justify-content-between mb-3">
+        <a href="{{ route('admin.galleries.create') }}" class="btn btn-primary mb-3">
 
-        Add Image
+            Add Image
 
-    </a>
+        </a>
+
+        <a href="{{ route('admin.galleries.trash') }}" class="btn btn-warning">
+
+            Trash
+
+        </a>
+    </div>
+
+
 
     <div class="row">
 

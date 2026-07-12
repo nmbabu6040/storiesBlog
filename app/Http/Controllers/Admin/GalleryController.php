@@ -64,16 +64,37 @@ class GalleryController extends Controller
         );
     }
 
+    public function trash()
+    {
+        $galleries = Gallery::onlyTrashed()->latest('deleted_at')->paginate(10);
+
+        return view('admin.gallery.trash', compact('galleries'));
+    }
+
+    public function restore($id)
+    {
+        Gallery::onlyTrashed()->findOrFail($id)->restore();
+
+        return back()->with('success', 'Gallery restored.');
+    }
+
+    public function forceDelete($id)
+    {
+        $gallery = Gallery::onlyTrashed()->findOrFail($id);
+
+        if ($gallery->image) {
+            Storage::disk('public')->delete($gallery->image);
+        }
+
+        $gallery->forceDelete();
+
+        return back()->with('success', 'Gallery permanently deleted.');
+    }
+
     public function destroy(Gallery $gallery)
     {
-        Storage::disk('public')
-            ->delete($gallery->image);
-
         $gallery->delete();
 
-        return back()->with(
-            'success',
-            'Gallery Deleted'
-        );
+        return back()->with('success', 'Gallery moved to trash.');
     }
 }

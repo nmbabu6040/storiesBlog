@@ -4,9 +4,18 @@
 
 @section('content')
 
-    <h3 class="mb-4">
-        Contact Messages
-    </h3>
+    <div class="d-flex justify-content-between mb-4">
+        <h3 class="mb-4">
+            Contact Messages
+        </h3>
+
+        <a href="{{ route('admin.messages.trash') }}" class="btn btn-warning">
+
+            Trash
+        </a>
+    </div>
+
+
 
     <table class="table table-bordered">
 
@@ -21,6 +30,8 @@
                 <th>Subject</th>
 
                 <th>Message</th>
+
+                <th>Action</th>
 
             </tr>
 
@@ -38,6 +49,24 @@
                     <td>{{ $message->subject }}</td>
 
                     <td>{{ $message->message }}</td>
+
+                    <td>
+
+
+                        <form action="{{ route('admin.messages.destroy', $message) }}" method="POST">
+
+                            @csrf
+                            @method('DELETE')
+
+                            <button class="btn btn-danger btn-sm">
+
+                                Delete
+
+                            </button>
+
+                        </form>
+
+                    </td>
 
                 </tr>
             @endforeach

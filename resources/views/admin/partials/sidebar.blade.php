@@ -73,6 +73,25 @@
         @endrole
 
 
+        <li class="nav-item">
+
+            <a href="{{ route('admin.tags.index') }}"
+                class="nav-link text-white {{ request()->routeIs('admin.tags.*') ? 'active' : '' }}">
+
+                <i class="fas fa-tags me-2"></i>
+
+                <span>
+
+                    Tags
+
+                </span>
+
+            </a>
+
+        </li>
+
+
+
 
         <li class="nav-item">
 
@@ -157,6 +176,19 @@
                 </a>
             </li>
         @endrole
+
+        <li class="nav-item">
+
+            <a href="{{ route('admin.profile.edit') }}"
+                class="nav-link text-white {{ request()->routeIs('admin.profile.edit') ? 'bg-primary' : '' }}">
+
+                <i class="fas fa-user-circle"></i>
+
+                My Profile
+
+            </a>
+
+        </li>
 
         <li class="nav-item">
             <a href="{{ route('admin.advertisements.index') }}"

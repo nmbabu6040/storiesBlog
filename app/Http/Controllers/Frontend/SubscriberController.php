@@ -20,6 +20,13 @@ class SubscriberController extends Controller
             'email' => $request->email
         ]);
 
+        createNotification(
+            'New Subscriber',
+            $request->email,
+            route('admin.subscribers.index'),
+            'subscriber'
+        );
+
         return back()->with(
             'subscribe_success',
             'Thanks for subscribing.'

@@ -24,6 +24,13 @@ class ContactController extends Controller
             'message' => $request->message,
         ]);
 
+        createNotification(
+            'New Contact Message',
+            $request->subject,
+            route('admin.messages.index'),
+            'message'
+        );
+
         return back()->with(
             'success',
             'Message sent successfully.'

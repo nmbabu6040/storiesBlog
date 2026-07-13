@@ -2,9 +2,10 @@
 
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Admin\ContactMessageController;
-use App\Http\Controllers\ProfileController;
+// use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Frontend\SubscriberController;
 use App\Http\Controllers\Admin\SubscriberController as AdminSubscriberController;
 use App\Http\Controllers\Admin\PostController;
@@ -19,7 +20,9 @@ use App\Http\Controllers\Frontend\PageController as FrontendPageController;
 use App\Http\Controllers\Admin\SummernoteController;
 use App\Http\Controllers\Admin\AdvertisementController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\TagController;
+use App\Http\Controllers\Admin\NotificationController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
@@ -49,6 +52,7 @@ use Illuminate\Http\Request;
 //     return 'Mail Sent';
 // });
 
+// Generate Sitemap
 Route::get('/generate-sitemap', function () {
 
     $sitemap = Sitemap::create();
@@ -80,23 +84,35 @@ Route::get('/generate-sitemap', function () {
 */
 Route::name('frontend.')->group(function () {
 
+    //home routes
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/post/{slug}', [HomeController::class, 'show'])->name('post.show');
     Route::get('/category/{slug}', [HomeController::class, 'category'])->name('category.show');
     Route::get('/search', [HomeController::class, 'search'])->name('search');
-    Route::post('/contact-submit', [ContactController::class, 'store'])->name('contact.submit');
-    Route::post('/subscribe', [SubscriberController::class, 'store'])->name('subscribe');
-    Route::post('/comment-submit', [CommentController::class, 'store'])
-        ->middleware('auth')
-        ->name('comment.store');
-    Route::get('/comments/{post}', function (\App\Models\Post $post) {
+    Route::get('/tag/{slug}', [HomeController::class, 'tag'])
+        ->name('tag.show');
 
+    //tag routes
+    // Route::get('/tag/{slug}', [FrontendTagController::class, 'show'])
+    //     ->name('tag.show');
+
+    //contact routes
+    Route::post('/contact-submit', [ContactController::class, 'store'])->name('contact.submit');
+
+    //subscribe routes
+    Route::post('/subscribe', [SubscriberController::class, 'store'])->name('subscribe');
+
+    //comment routes
+    Route::post('/comment-submit', [CommentController::class, 'store'])
+        ->middleware('auth')->name('comment.store');
+    Route::get('/comments/{post}', function (\App\Models\Post $post) {
         return view(
             'frontend.partials.comments',
             compact('post')
         );
     })->name('comments.load');
 
+    //page routes
     Route::get('/{slug}', [FrontendPageController::class, 'show'])
         ->where('slug', '^(?!login|register|forgot-password|reset-password|verify-email|email|confirm-password|logout|profile|admin).*$')
         ->name('page');
@@ -189,11 +205,31 @@ Route::prefix('admin')
             ->middleware('permission:manage-comments');
 
         // Messages
-        Route::get('/messages', [ContactMessageController::class, 'index'])
-            ->name('messages.index');
-        Route::get('messages-trash', [ContactMessageController::class, 'trash'])->name('messages.trash');
-        Route::post('messages/{id}/restore', [ContactMessageController::class, 'restore'])->name('messages.restore');
-        Route::delete('messages/{id}/force-delete', [ContactMessageController::class, 'forceDelete'])->name('messages.forceDelete');
+        Route::get(
+            '/messages',
+            [ContactMessageController::class, 'index']
+        )->name('messages.index');
+
+        Route::delete(
+            '/messages/{message}',
+            [ContactMessageController::class, 'destroy']
+        )->name('messages.destroy');
+
+        Route::get(
+            '/messages-trash',
+            [ContactMessageController::class, 'trash']
+        )->name('messages.trash');
+
+        Route::post(
+            '/messages/{id}/restore',
+            [ContactMessageController::class, 'restore']
+        )->name('messages.restore');
+
+        Route::delete(
+            '/messages/{id}/force-delete',
+            [ContactMessageController::class, 'forceDelete']
+        )->name('messages.forceDelete');
+
 
         // Subscribers
         Route::get('/subscribers', [AdminSubscriberController::class, 'index'])
@@ -233,9 +269,14 @@ Route::prefix('admin')
         // Users (Super Admin Only)
         Route::resource('users', \App\Http\Controllers\Admin\UserController::class)
             ->middleware('permission:manage-users');
-        Route::get('users-trash', [UserController::class, 'trash'])->name('users.trash');
-        Route::post('users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
-        Route::delete('users/{id}/force-delete', [UserController::class, 'forceDelete'])->name('users.forceDelete');
+        Route::get('users-trash', [UserController::class, 'trash'])
+            ->name('users.trash');
+
+        Route::post('users/{id}/restore', [UserController::class, 'restore'])
+            ->name('users.restore');
+
+        Route::delete('users/{id}/force-delete', [UserController::class, 'forceDelete'])
+            ->name('users.forceDelete');
 
         // Settings (Super Admin Only)
         Route::get('/settings', [SettingController::class, 'edit'])
@@ -247,7 +288,23 @@ Route::prefix('admin')
             ->middleware('permission:manage-settings');
 
         // Media
-        Route::resource('media', \App\Http\Controllers\Admin\MediaController::class);
+        Route::resource('media', MediaController::class)
+            ->parameter('media', 'media');
+
+        Route::get(
+            'media-trash',
+            [MediaController::class, 'trash']
+        )->name('media.trash');
+
+        Route::post(
+            'media/{id}/restore',
+            [MediaController::class, 'restore']
+        )->name('media.restore');
+
+        Route::delete(
+            'media/{id}/force-delete',
+            [MediaController::class, 'forceDelete']
+        )->name('media.forceDelete');
 
         // Summernote
         Route::post('/summernote/upload', [App\Http\Controllers\Admin\SummernoteController::class, 'upload'])
@@ -262,16 +319,65 @@ Route::prefix('admin')
         Route::delete('advertisements/{id}/force-delete', [AdvertisementController::class, 'forceDelete'])->name('advertisements.forceDelete');
 
         //tags
-        Route::get('tags-trash', [TagController::class, 'trash'])->name('tags.trash');
-        Route::post('tags/{id}/restore', [TagController::class, 'restore'])->name('tags.restore');
-        Route::delete('tags/{id}/force-delete', [TagController::class, 'forceDelete'])->name('tags.forceDelete');
+        Route::resource('tags', TagController::class);;
+
+        Route::get(
+            'tags-trash',
+            [TagController::class, 'trash']
+        )->name('tags.trash');
+
+        Route::post(
+            'tags/{id}/restore',
+            [TagController::class, 'restore']
+        )->name('tags.restore');
+
+        Route::delete(
+            'tags/{id}/force-delete',
+            [TagController::class, 'forceDelete']
+        )->name('tags.forceDelete');
+
+        //Notification routes
+        Route::get(
+            '/notifications',
+            [NotificationController::class, 'index']
+        )->name('notifications.index');
+
+        Route::post(
+            '/notifications/read-all',
+            [NotificationController::class, 'readAll']
+        )->name('notifications.readAll');
+
+        Route::post(
+            '/notifications/{notification}/read',
+            [NotificationController::class, 'read']
+        )->name('notifications.read');
+
+        Route::delete(
+            '/notifications/{notification}',
+            [NotificationController::class, 'destroy']
+        )->name('notifications.destroy');
+
+        Route::delete(
+            '/notifications',
+            [NotificationController::class, 'clear']
+        )->name('notifications.clear');
+
+        //profile routes
+        Route::get('/profile', [ProfileController::class, 'edit'])
+            ->name('profile.edit');
+
+        Route::put('/profile', [ProfileController::class, 'update'])
+            ->name('profile.update');
+
+        Route::put('/profile/password', [ProfileController::class, 'updatePassword'])
+            ->name('profile.password');
     });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+// Route::middleware('auth')->group(function () {
+//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// });
 
 
 require __DIR__ . '/auth.php';

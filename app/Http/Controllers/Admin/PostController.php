@@ -14,6 +14,9 @@ use App\Models\Setting;
 use App\Models\Advertisement;
 use App\Models\Post;
 use App\Models\User;
+use App\Models\Media;
+use App\Models\Tag;
+use App\Models\ContactMessage;
 
 class PostController extends Controller
 {
@@ -41,9 +44,15 @@ class PostController extends Controller
             ->orderBy('name')
             ->get();
 
+        $tags = Tag::where('status', 1)
+            ->orderBy('name')
+            ->get();
+
+        $media = Media::latest()->get();
+
         return view(
             'admin.post.create',
-            compact('categories')
+            compact('categories', 'tags', 'media')
         );
     }
 
@@ -54,27 +63,36 @@ class PostController extends Controller
             'title' => 'required|max:255',
             'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'content' => 'required',
-
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id',
+            'media_id' => 'nullable|exists:media,id',
         ]);
 
+        //post image
         $thumbnail = null;
 
         if ($request->hasFile('thumbnail')) {
 
-            $thumbnail = $request
-                ->file('thumbnail')
+            $thumbnail = $request->file('thumbnail')
                 ->store('posts', 'public');
+        } elseif ($request->filled('media_id')) {
+
+            $media = Media::find($request->media_id);
+
+            $thumbnail = $media?->file_path;
         }
 
+        //slug
         $slug = Str::slug($request->title);
 
+        //post count
         $count = \App\Models\Post::where('slug', 'LIKE', "{$slug}%")->count();
 
         if ($count > 0) {
             $slug = $slug . '-' . ($count + 1);
         }
 
-        Post::create([
+        $post = Post::create([
 
             'user_id' => auth()->id(),
 
@@ -98,6 +116,8 @@ class PostController extends Controller
 
             'thumbnail' => $thumbnail,
 
+            'media_id' => $request->media_id,
+
             'content' => $request->content,
 
             'meta_title' => $request->meta_title,
@@ -114,8 +134,19 @@ class PostController extends Controller
 
             'views' => 0
 
-
         ]);
+
+        $post->tags()->sync($request->tags ?? []);
+
+        if ($post->review_status == 'pending') {
+
+            createNotification(
+                'New Pending Post',
+                $post->title,
+                route('admin.posts.index'),
+                'post'
+            );
+        }
 
         return redirect()
             ->route('admin.posts.index')
@@ -138,11 +169,19 @@ class PostController extends Controller
             ->orderBy('name')
             ->get();
 
+        $tags = Tag::where('status', 1)
+            ->orderBy('name')
+            ->get();
+
+        $media = Media::latest()->get();
+
         return view(
             'admin.post.edit',
             compact(
                 'post',
-                'categories'
+                'categories',
+                'tags',
+                'media'
             )
         );
     }
@@ -155,22 +194,30 @@ class PostController extends Controller
             'category_id' => 'required|exists:categories,id',
             'title' => 'required|max:255',
             'content' => 'required',
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id',
+            'media_id' => 'nullable|exists:media,id',
         ]);
+
+
 
         // thumnail part
         $thumbnail = $post->thumbnail;
 
         if ($request->hasFile('thumbnail')) {
 
-            if ($post->thumbnail) {
+            if ($post->thumbnail && Storage::disk('public')->exists($post->thumbnail)) {
 
-                Storage::disk('public')
-                    ->delete($post->thumbnail);
+                Storage::disk('public')->delete($post->thumbnail);
             }
 
-            $thumbnail = $request
-                ->file('thumbnail')
+            $thumbnail = $request->file('thumbnail')
                 ->store('posts', 'public');
+        } elseif ($request->filled('media_id')) {
+
+            $media = Media::find($request->media_id);
+
+            $thumbnail = $media?->file_path;
         }
 
         // slug
@@ -202,6 +249,8 @@ class PostController extends Controller
 
             'slug' => $slug,
 
+            'media_id' => $request->media_id,
+
             'thumbnail' => $thumbnail,
 
             'content' => $request->content,
@@ -215,6 +264,8 @@ class PostController extends Controller
             'status' => $request->status ? 1 : 0
 
         ]);
+
+        $post->tags()->sync($request->tags ?? []);
 
         return redirect()
             ->route('admin.posts.index')

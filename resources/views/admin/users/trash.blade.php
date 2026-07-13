@@ -1,24 +1,23 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Users')
+@section('title', 'Trash Users')
 
 @section('content')
 
-    <h3 class="mb-4">
-        Users
-    </h3>
+    <div class="d-flex justify-content-between mb-4">
 
-    <div class="d-flex gap-2">
-        <a href="{{ route('admin.users.create') }}" class="btn btn-primary mb-3">
-            Add User
+        <h3>Trash Users</h3>
+
+        <a href="{{ route('admin.users.index') }}" class="btn btn-primary">
+
+            Back
+
         </a>
 
-        <a href="{{ route('admin.users.trash') }}" class="btn btn-warning mb-3">
-            Trash
-        </a>
     </div>
 
     <div class="card">
+
         <div class="card-body">
 
             <table class="table table-bordered align-middle">
@@ -28,10 +27,14 @@
                     <tr>
 
                         <th>#</th>
+
                         <th>Name</th>
+
                         <th>Email</th>
-                        <th>Role</th>
-                        <th width="180">Action</th>
+
+                        <th>Deleted At</th>
+
+                        <th>Action</th>
 
                     </tr>
 
@@ -39,7 +42,7 @@
 
                 <tbody>
 
-                    @forelse($users as $user)
+                    @forelse($trashUsers as $user)
                         <tr>
 
                             <td>{{ $loop->iteration }}</td>
@@ -48,26 +51,31 @@
 
                             <td>{{ $user->email }}</td>
 
-                            <td>
-                                {{ $user->roles->pluck('name')->implode(', ') }}
-                            </td>
+                            <td>{{ $user->deleted_at->format('d M Y h:i A') }}</td>
 
                             <td>
 
-                                <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-warning">
+                                <form action="{{ route('admin.users.restore', $user->id) }}" method="POST" class="d-inline">
 
-                                    Edit
+                                    @csrf
 
-                                </a>
+                                    <button class="btn btn-success btn-sm">
 
-                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="d-inline">
+                                        Restore
+
+                                    </button>
+
+                                </form>
+
+                                <form action="{{ route('admin.users.forceDelete', $user->id) }}" method="POST"
+                                    class="d-inline" onsubmit="return confirm('Delete permanently?')">
 
                                     @csrf
                                     @method('DELETE')
 
-                                    <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this user?')">
+                                    <button class="btn btn-danger btn-sm">
 
-                                        Delete
+                                        Delete Forever
 
                                     </button>
 
@@ -83,7 +91,7 @@
 
                             <td colspan="5" class="text-center">
 
-                                No users found.
+                                Trash is empty.
 
                             </td>
 
@@ -94,9 +102,10 @@
 
             </table>
 
-            {{ $users->links() }}
+            {{ $trashUsers->links() }}
 
         </div>
+
     </div>
 
 @endsection

@@ -8,11 +8,19 @@
 
         <h3>Media Library</h3>
 
-        <a href="{{ route('admin.media.create') }}" class="btn btn-primary">
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.media.create') }}" class="btn btn-primary">
 
-            Upload Image
+                Upload Image
 
-        </a>
+            </a>
+
+            <a href="{{ route('admin.media.trash') }}" class="btn btn-warning">
+
+                Trash
+
+            </a>
+        </div>
 
     </div>
 

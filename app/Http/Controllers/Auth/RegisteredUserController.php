@@ -42,6 +42,13 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        createNotification(
+            'New User',
+            $user->name,
+            route('admin.users.index'),
+            'user'
+        );
+
         event(new Registered($user));
 
         Auth::login($user);

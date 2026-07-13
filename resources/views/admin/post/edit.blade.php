@@ -44,6 +44,36 @@
                 <div class="mb-3">
 
                     <label class="form-label">
+
+                        Tags
+
+                    </label>
+
+                    <select name="tags[]" class="form-select tag-select" multiple>
+
+                        @foreach ($tags as $tag)
+                            <option value="{{ $tag->id }}" {{ $post->tags->contains($tag->id) ? 'selected' : '' }}>
+
+                                {{ $tag->name }}
+
+                            </option>
+                        @endforeach
+
+                    </select>
+
+                    @error('tags')
+                        <small class="text-danger">
+
+                            {{ $message }}
+
+                        </small>
+                    @enderror
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
                         Title
                     </label>
 
@@ -62,6 +92,34 @@
                     @endif
 
                     <input type="file" name="thumbnail" class="form-control">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Select From Media Library
+
+                    </label>
+
+                    <select name="media_id" class="form-select">
+
+                        <option value="">
+
+                            Select Image
+
+                        </option>
+
+                        @foreach ($media as $item)
+                            <option value="{{ $item->id }}" {{ $post->media_id == $item->id ? 'selected' : '' }}>
+
+                                {{ $item->file_name }}
+
+                            </option>
+                        @endforeach
+
+                    </select>
 
                 </div>
 
@@ -195,6 +253,11 @@
 
             }
 
+        });
+    </script>
+    <script>
+        $('.tag-select').select2({
+            placeholder: "Select Tags"
         });
     </script>
 @endpush

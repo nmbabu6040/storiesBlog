@@ -9,6 +9,7 @@ use App\Models\Gallery;
 use Illuminate\Support\Str;
 use App\Models\Comment;
 use App\Models\Setting;
+use App\Models\Tag;
 use App\Models\Advertisement;
 use Illuminate\Http\Request;
 
@@ -182,6 +183,25 @@ class HomeController extends Controller
             'frontend.category.show',
             compact(
                 'category',
+                'posts'
+            )
+        );
+    }
+
+    public function tag($slug)
+    {
+        $tag = Tag::where('slug', $slug)
+            ->firstOrFail();
+
+        $posts = $tag->posts()
+            ->where('status', 1)
+            ->latest()
+            ->paginate(9);
+
+        return view(
+            'frontend.tag',
+            compact(
+                'tag',
                 'posts'
             )
         );

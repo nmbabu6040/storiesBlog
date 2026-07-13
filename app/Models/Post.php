@@ -17,6 +17,7 @@ class Post extends Model
         'title',
         'slug',
         'thumbnail',
+        'media_id',
         'content',
         'meta_title',
         'meta_description',
@@ -78,5 +79,15 @@ class Post extends Model
         }
 
         return number_format($this->views);
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+
+    public function media()
+    {
+        return $this->belongsTo(Media::class);
     }
 }

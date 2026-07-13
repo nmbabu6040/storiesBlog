@@ -50,12 +50,55 @@ class MediaController extends Controller
             ->with('success', 'Image uploaded successfully.');
     }
 
-    public function destroy(Media $medium)
+    public function trash()
     {
-        Storage::disk('public')->delete($medium->file_path);
+        $trashMedia = Media::onlyTrashed()
+            ->latest('deleted_at')
+            ->paginate(10);
 
-        $medium->delete();
+        return view(
+            'admin.media.trash',
+            compact('trashMedia')
+        );
+    }
 
-        return back()->with('success', 'Image deleted successfully.');
+    public function destroy(Media $media)
+    {
+        $media->delete();
+
+        return back()->with(
+            'success',
+            'Media moved to trash.'
+        );
+    }
+    public function restore($id)
+    {
+        Media::onlyTrashed()
+            ->findOrFail($id)
+            ->restore();
+
+        return back()->with(
+            'success',
+            'Media restored successfully.'
+        );
+    }
+
+    public function forceDelete($id)
+    {
+        $media = Media::onlyTrashed()
+            ->findOrFail($id);
+
+        if ($media->file_path) {
+
+            Storage::disk('public')
+                ->delete($media->file_path);
+        }
+
+        $media->forceDelete();
+
+        return back()->with(
+            'success',
+            'Media permanently deleted.'
+        );
     }
 }

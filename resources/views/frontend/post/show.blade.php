@@ -4,7 +4,7 @@
 
 @section('meta_description', $post->meta_description)
 
-@section('meta_keywords', $post->meta_keywords)
+{{-- @section('meta_keywords', $post->meta_keywords) --}}
 
 @if ($beforePostAd)
 
@@ -76,6 +76,8 @@
 
                         </span> --}}
 
+
+
                         <h1 class="mb-3">
 
                             {{ $post->title }}
@@ -134,6 +136,29 @@
                             </div>
 
                         </div>
+
+                        @if ($post->tags->count())
+
+                            <div class="mb-4">
+
+                                <strong class="me-2">
+
+                                    Tags :
+
+                                </strong>
+
+                                @foreach ($post->tags as $tag)
+                                    <a href="{{ route('frontend.tag.show', $tag->slug) }}"
+                                        class="badge bg-primary text-decoration-none me-2">
+
+                                        {{ $tag->name }}
+
+                                    </a>
+                                @endforeach
+
+                            </div>
+
+                        @endif
                     </div>
 
                 </div>
@@ -317,7 +342,7 @@
 
                                 <small>
 
-                                    {{ $post->formatted_views }} Views
+                                    {{ $popular->formatted_views }} Views
 
                                 </small>
 

@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\Setting;
 use App\Models\Menu;
+use App\Models\Notification;
+use App\Models\Tag;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Advertisement;
@@ -73,6 +75,27 @@ class AppServiceProvider extends ServiceProvider
                 'footerMenus' => $footerMenus,
 
             ]);
+
+            $view->with(
+                'sidebarTags',
+                Tag::where('status', 1)
+                    ->withCount('posts')
+                    ->orderBy('name')
+                    ->get()
+            );
+        });
+
+        View::composer('admin.layouts.master', function ($view) {
+
+            $view->with(
+                'notifications',
+                Notification::latest()->take(10)->get()
+            );
+
+            $view->with(
+                'notificationCount',
+                Notification::where('is_read', false)->count()
+            );
         });
 
         View::share(

@@ -95,21 +95,27 @@ class UserController extends Controller
 
     public function trash()
     {
-        $users = User::onlyTrashed()->latest('deleted_at')->paginate(10);
+        $trashUsers = User::onlyTrashed()
+            ->latest('deleted_at')
+            ->paginate(10);
 
-        return view('admin.user.trash', compact('users'));
+        return view('admin.users.trash', compact('trashUsers'));
     }
 
     public function restore($id)
     {
-        User::onlyTrashed()->findOrFail($id)->restore();
+        User::onlyTrashed()
+            ->findOrFail($id)
+            ->restore();
 
-        return back()->with('success', 'User restored.');
+        return back()->with('success', 'User restored successfully.');
     }
 
     public function forceDelete($id)
     {
-        User::onlyTrashed()->findOrFail($id)->forceDelete();
+        $user = User::onlyTrashed()->findOrFail($id);
+
+        $user->forceDelete();
 
         return back()->with('success', 'User permanently deleted.');
     }

@@ -51,6 +51,13 @@ class CommentController extends Controller
 
         ]);
 
+        createNotification(
+            'New Comment',
+            $request->comment,
+            route('admin.comments.index'),
+            'comment'
+        );
+
         if ($request->ajax()) {
 
             return response()->json([

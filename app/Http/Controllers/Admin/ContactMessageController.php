@@ -9,40 +9,53 @@ class ContactMessageController extends Controller
 {
     public function index()
     {
-        $messages = ContactMessage::latest()
-            ->get();
+        $messages = ContactMessage::query()
+            ->latest()
+            ->paginate(10);
 
-        return view(
-            'admin.messages.index',
-            compact('messages')
-        );
-    }
-
-    public function trash()
-    {
-        $messages = ContactMessage::onlyTrashed()->latest('deleted_at')->paginate(10);
-
-        return view('admin.message.trash', compact('messages'));
-    }
-
-    public function restore($id)
-    {
-        ContactMessage::onlyTrashed()->findOrFail($id)->restore();
-
-        return back()->with('success', 'Message restored.');
-    }
-
-    public function forceDelete($id)
-    {
-        ContactMessage::onlyTrashed()->findOrFail($id)->forceDelete();
-
-        return back()->with('success', 'Message permanently deleted.');
+        return view('admin.messages.index', compact('messages'));
     }
 
     public function destroy(ContactMessage $message)
     {
         $message->delete();
 
-        return back()->with('success', 'Message moved to trash.');
+        return redirect()
+            ->route('admin.messages.index')
+            ->with('success', 'Message moved to trash.');
+    }
+
+    public function trash()
+    {
+        $trashMessages = ContactMessage::onlyTrashed()
+            ->latest('deleted_at')
+            ->paginate(10);
+
+        return view(
+            'admin.messages.trash',
+            compact('trashMessages')
+        );
+    }
+
+    public function restore($id)
+    {
+        ContactMessage::onlyTrashed()
+            ->findOrFail($id)
+            ->restore();
+
+        return redirect()
+            ->route('admin.messages.trash')
+            ->with('success', 'Message restored.');
+    }
+
+    public function forceDelete($id)
+    {
+        ContactMessage::onlyTrashed()
+            ->findOrFail($id)
+            ->forceDelete();
+
+        return redirect()
+            ->route('admin.messages.trash')
+            ->with('success', 'Message permanently deleted.');
     }
 }

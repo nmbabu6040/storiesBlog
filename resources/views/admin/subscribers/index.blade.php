@@ -6,9 +6,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <h3 class="mb-0">
-            Subscribers
-        </h3>
+        <h3 class="mb-0">Subscribers</h3>
 
         <div class="d-flex gap-2">
 
@@ -46,9 +44,7 @@
                 <tr>
 
                     <th width="50">
-
                         <input type="checkbox" id="checkAll">
-
                     </th>
 
                     <th width="80">#</th>
@@ -59,7 +55,7 @@
 
                     <th width="180">Subscribed At</th>
 
-                    <th width="170">Action</th>
+                    <th width="180">Action</th>
 
                 </tr>
 
@@ -67,7 +63,7 @@
 
             <tbody>
 
-                @forelse ($subscribers as $subscriber)
+                @forelse($subscribers as $subscriber)
                     <tr>
 
                         <td>
@@ -76,56 +72,30 @@
 
                         </td>
 
-                        <td>
+                        <td>{{ $loop->iteration }}</td>
 
-                            {{ $loop->iteration }}
+                        <td>{{ $subscriber->name ?? 'N/A' }}</td>
 
-                        </td>
+                        <td>{{ $subscriber->email }}</td>
 
-                        <td>
-
-                            {{ $subscriber->name ?? 'N/A' }}
-
-                        </td>
+                        <td>{{ $subscriber->created_at->format('d M, Y h:i A') }}</td>
 
                         <td>
 
-                            {{ $subscriber->email }}
+                            <button type="button" class="btn btn-sm btn-danger"
+                                onclick="if(confirm('Delete this subscriber?')){
+                            document.getElementById('delete-form-{{ $subscriber->id }}').submit();
+                        }">
 
-                        </td>
+                                Delete
 
-                        <td>
+                            </button>
 
-                            {{ $subscriber->created_at->format('d M, Y h:i A') }}
+                            <a href="{{ route('admin.newsletter.create') }}" class="btn btn-sm btn-primary">
 
-                        </td>
+                                Newsletter
 
-                        <td>
-
-                            <div class="d-flex gap-2">
-
-                                <form action="{{ route('admin.subscribers.destroy', $subscriber->id) }}" method="POST"
-                                    onsubmit="return confirm('Delete this subscriber?')">
-
-                                    @csrf
-
-                                    @method('DELETE')
-
-                                    <button type="submit" class="btn btn-sm btn-danger">
-
-                                        Delete
-
-                                    </button>
-
-                                </form>
-
-                                <a href="{{ route('admin.newsletter.create') }}" class="btn btn-sm btn-primary">
-
-                                    Newsletter
-
-                                </a>
-
-                            </div>
+                            </a>
 
                         </td>
 
@@ -148,13 +118,24 @@
 
         </table>
 
-        <div class="mt-3">
-
-            {{ $subscribers->links() }}
-
-        </div>
-
     </form>
+
+    <div class="mt-3">
+
+        {{ $subscribers->links() }}
+
+    </div>
+
+    {{-- Hidden Delete Forms --}}
+    @foreach ($subscribers as $subscriber)
+        <form id="delete-form-{{ $subscriber->id }}" action="{{ route('admin.subscribers.destroy', $subscriber->id) }}"
+            method="POST" style="display:none;">
+
+            @csrf
+            @method('DELETE')
+
+        </form>
+    @endforeach
 
 @endsection
 
@@ -162,9 +143,9 @@
     <script>
         document.getElementById('checkAll').addEventListener('change', function() {
 
-            document.querySelectorAll('input[name="ids[]"]').forEach(function(checkbox) {
+            document.querySelectorAll('input[name="ids[]"]').forEach(function(item) {
 
-                checkbox.checked = document.getElementById('checkAll').checked;
+                item.checked = document.getElementById('checkAll').checked;
 
             });
 

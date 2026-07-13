@@ -24,12 +24,19 @@ class ContactController extends Controller
             'message' => $request->message,
         ]);
 
+        activityLog(
+            'Contact',
+            'Message',
+            $request->email . ' sent a contact message.'
+        );
+
         createNotification(
             'New Contact Message',
             $request->subject,
             route('admin.messages.index'),
             'message'
         );
+
 
         return back()->with(
             'success',

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
+use Illuminate\Support\Str;
+use App\Models\Post;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -35,7 +37,7 @@ class CommentController extends Controller
             );
         }
 
-        Comment::create([
+        $comment = Comment::create([
 
             'post_id'   => $request->post_id,
 
@@ -51,12 +53,23 @@ class CommentController extends Controller
 
         ]);
 
+        $post = Post::findOrFail($request->post_id);
+
+        activityLog(
+            'Comment',
+            'Create',
+            auth()->user()->name . ' commented on ' . $post->title
+        );
+
+
         createNotification(
             'New Comment',
             $request->comment,
             route('admin.comments.index'),
             'comment'
         );
+
+
 
         if ($request->ajax()) {
 

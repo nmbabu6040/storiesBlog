@@ -44,6 +44,12 @@ class ProfileController extends Controller
             'image' => $image,
         ]);
 
+        activityLog(
+            'Profile',
+            'Update',
+            auth()->user()->name . ' updated profile.'
+        );
+
         return back()->with(
             'success',
             'Profile updated successfully.'
@@ -72,6 +78,12 @@ class ProfileController extends Controller
         $user->update([
             'password' => Hash::make($request->password)
         ]);
+
+        activityLog(
+            'Profile',
+            'Password',
+            auth()->user()->name . ' changed password.'
+        );
 
         return back()->with(
             'success',

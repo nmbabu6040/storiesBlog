@@ -45,6 +45,12 @@ class MediaController extends Controller
 
         ]);
 
+        activityLog(
+            'Media',
+            'Upload',
+            $file->getClientOriginalName()
+        );
+
         return redirect()
             ->route('admin.media.index')
             ->with('success', 'Image uploaded successfully.');
@@ -64,6 +70,12 @@ class MediaController extends Controller
 
     public function destroy(Media $media)
     {
+        activityLog(
+            'Media',
+            'Delete',
+            $media->file_name
+        );
+
         $media->delete();
 
         return back()->with(

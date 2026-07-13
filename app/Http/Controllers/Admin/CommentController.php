@@ -49,7 +49,7 @@ class CommentController extends Controller
             'comment' => 'required'
         ]);
 
-        Comment::create([
+        $comments = Comment::create([
 
             'post_id'   => $comment->post_id,
 
@@ -64,6 +64,24 @@ class CommentController extends Controller
             'status'    => 1,
 
         ]);
+
+        $post = Post::find($comment->post_id);
+
+        if ($request->parent_id) {
+
+            activityLog(
+                'Comment',
+                'Reply',
+                auth()->user()->name . ' replied to a comment on "' . $post->title . '"'
+            );
+        } else {
+
+            activityLog(
+                'Comment',
+                'Create',
+                auth()->user()->name . ' commented on "' . $post->title . '"'
+            );
+        }
 
         return redirect()
             ->route('admin.comments.index')

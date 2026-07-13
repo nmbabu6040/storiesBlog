@@ -138,6 +138,12 @@ class PostController extends Controller
 
         $post->tags()->sync($request->tags ?? []);
 
+        activityLog(
+            'Post',
+            'Create',
+            $post->title
+        );
+
         if ($post->review_status == 'pending') {
 
             createNotification(
@@ -147,6 +153,8 @@ class PostController extends Controller
                 'post'
             );
         }
+
+
 
         return redirect()
             ->route('admin.posts.index')
@@ -267,6 +275,12 @@ class PostController extends Controller
 
         $post->tags()->sync($request->tags ?? []);
 
+        activityLog(
+            'Post',
+            'Update',
+            $post->title
+        );
+
         return redirect()
             ->route('admin.posts.index')
             ->with(
@@ -299,6 +313,12 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         $this->authorize('delete', $post);
+
+        activityLog(
+            'Post',
+            'Delete',
+            $post->title
+        );
 
         $post->delete();
 

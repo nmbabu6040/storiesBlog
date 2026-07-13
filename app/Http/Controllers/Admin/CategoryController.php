@@ -53,6 +53,12 @@ class CategoryController extends Controller
 
         ]);
 
+        activityLog(
+            'Category',
+            'Create',
+            $category->name
+        );
+
         return redirect()
             ->route('admin.categories.index')
             ->with(
@@ -103,6 +109,12 @@ class CategoryController extends Controller
 
         ]);
 
+        activityLog(
+            'Category',
+            'Update',
+            $category->name
+        );
+
         return redirect()
             ->route('admin.categories.index')
             ->with(
@@ -135,6 +147,12 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
+        activityLog(
+            'Category',
+            'Delete',
+            $category->name
+        );
+
         $category->delete();
 
         return redirect()

@@ -34,6 +34,12 @@ class TagController extends Controller
             'status' => $request->boolean('status'),
         ]);
 
+        activityLog(
+            'Tag',
+            'Create',
+            $tag->name
+        );
+
         return redirect()
             ->route('admin.tags.index')
             ->with('success', 'Tag created successfully.');
@@ -57,6 +63,12 @@ class TagController extends Controller
             'status' => $request->boolean('status'),
         ]);
 
+        activityLog(
+            'Tag',
+            'Update',
+            $tag->name
+        );
+
         return redirect()
             ->route('admin.tags.index')
             ->with('success', 'Tag updated successfully.');
@@ -64,6 +76,12 @@ class TagController extends Controller
 
     public function destroy(Tag $tag)
     {
+        activityLog(
+            'Tag',
+            'Delete',
+            $tag->name
+        );
+
         $tag->delete();
 
         return back()->with('success', 'Tag moved to trash.');

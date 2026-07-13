@@ -3,6 +3,7 @@
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Admin\ContactMessageController;
 // use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProfileController;
@@ -371,6 +372,22 @@ Route::prefix('admin')
 
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])
             ->name('profile.password');
+
+        //activity log
+        Route::get(
+            '/activity-logs',
+            [ActivityLogController::class, 'index']
+        )->name('activity.index');
+
+        Route::delete(
+            '/activity-logs/{activityLog}',
+            [ActivityLogController::class, 'destroy']
+        )->name('activity.destroy');
+
+        Route::delete(
+            '/activity-logs',
+            [ActivityLogController::class, 'clear']
+        )->name('activity.clear');
     });
 
 // Route::middleware('auth')->group(function () {

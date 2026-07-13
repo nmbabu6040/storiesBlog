@@ -18,6 +18,16 @@ class ContactMessageController extends Controller
 
     public function destroy(ContactMessage $message)
     {
+        activityLog(
+
+            'Message',
+
+            'Delete',
+
+            $message->email
+
+        );
+
         $message->delete();
 
         return redirect()

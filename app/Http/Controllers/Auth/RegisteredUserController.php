@@ -42,6 +42,12 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        activityLog(
+            'User',
+            'Register',
+            $user->name . ' registered.'
+        );
+
         createNotification(
             'New User',
             $user->name,

@@ -24,6 +24,7 @@ class SubscriberController extends Controller
 
     public function create()
     {
+
         return view('admin.subscribers.newsletter');
     }
 
@@ -46,6 +47,12 @@ class SubscriberController extends Controller
                     )
                 );
         }
+
+        activityLog(
+            'Subscriber',
+            'Send',
+            $request->subject
+        );
 
         return redirect()
             ->route('admin.subscribers.index')
@@ -91,8 +98,13 @@ class SubscriberController extends Controller
 
     public function destroy(Subscriber $subscriber)
     {
-        $subscriber->delete();
+        activityLog(
+            'Subscriber',
+            'Delete',
+            $subscriber->email
+        );
 
+        $subscriber->delete();
         return back()->with(
             'success',
             'Subscriber moved to trash.'

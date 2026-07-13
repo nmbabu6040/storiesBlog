@@ -20,12 +20,20 @@ class SubscriberController extends Controller
             'email' => $request->email
         ]);
 
+        activityLog(
+            'Subscriber',
+            'Subscribe',
+            $request->email . ' subscribed.'
+        );
+
         createNotification(
             'New Subscriber',
             $request->email,
             route('admin.subscribers.index'),
             'subscriber'
         );
+
+
 
         return back()->with(
             'subscribe_success',

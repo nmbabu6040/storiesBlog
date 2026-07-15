@@ -56,5 +56,7 @@ class Setting extends Model
         'destination_category_id',
         'lifestyle_category_id',
         'photography_category_id',
+
+        'maintenance_mode',
     ];
 }

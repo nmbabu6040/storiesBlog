@@ -16,9 +16,9 @@
                 @if ($notificationCount)
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger ">
 
-                        {{-- {{ $notificationCount }} --}}
+                        {{ $notificationCount }}
 
-                        @if ($notification->type == 'post')
+                        {{-- @if ($notification->type == 'post')
                         @elseif($notification->type == 'comment')
 
                         @elseif($notification->type == 'subscriber')
@@ -27,7 +27,7 @@
                         @else
                         @endif
 
-                        {{ ucfirst($notification->type) }}
+                        {{ ucfirst($notification->type) }} --}}
 
                     </span>
                 @endif
@@ -119,14 +119,22 @@
         </div>
 
         {{-- Profile --}}
-        <img src="{{ asset('storage/' . auth()->user()->image ?? 'user.png') }}" class="rounded-circle"
-            style="width: 40px; height: 40px;" alt="">
+        {{-- <img src="{{ asset('storage/' . auth()->user()->image ?? 'user.png') }}" class="rounded-circle"
+            style="width: 40px; height: 40px;" alt=""> --}}
+        <img src="{{ auth()->user()->image ? asset('storage/' . auth()->user()->image) : asset('images/user.png') }}"
+            class="rounded-circle" style="width:40px;height:40px;object-fit:cover;" alt="User">
 
         <a href="{{ route('admin.profile.edit') }}" class="text-success text-decoration-none fw-bold">
 
             {{ auth()->user()->name }}
 
         </a>
+
+        <button id="themeToggle" class="btn btn-dark">
+
+            🌙
+
+        </button>
 
         <form action="{{ route('logout') }}" method="POST">
 

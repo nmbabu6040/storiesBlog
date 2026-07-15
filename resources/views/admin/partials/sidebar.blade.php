@@ -192,6 +192,23 @@
 
         <li class="nav-item">
 
+            <a href="{{ route('admin.backup.index') }}"
+                class="nav-link text-white {{ request()->routeIs('admin.backups.*') ? 'bg-primary' : '' }}">
+
+                <i class="fas fa-database"></i>
+
+                <span>
+
+                    Backup
+
+                </span>
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
             <a href="{{ route('admin.activity.index') }}"
                 class="nav-link text-white {{ request()->routeIs('admin.activity.index') ? 'bg-primary' : '' }}">
 

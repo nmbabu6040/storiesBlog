@@ -3,6 +3,7 @@
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Admin\ContactMessageController;
 // use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\Admin\SummernoteController;
 use App\Http\Controllers\Admin\AdvertisementController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MediaController;
+use App\Http\Controllers\Admin\SystemController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\NotificationController;
 use Illuminate\Support\Facades\Route;
@@ -33,14 +35,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 
-// Route::get('/force-logout', function () {
-//     Auth::logout();
+Route::get('/force-logout', function () {
+    Auth::logout();
 
-//     request()->session()->invalidate();
-//     request()->session()->regenerateToken();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
 
-//     return redirect('/');
-// });
+    return redirect('/');
+});
 
 // Route::get('/mail-test', function () {
 
@@ -78,12 +80,16 @@ Route::get('/generate-sitemap', function () {
 
     return 'Sitemap Generated Successfully';
 });
+
+//temporary routes
+
 /*
 |--------------------------------------------------------------------------
 | Frontend
 |--------------------------------------------------------------------------
 */
-Route::name('frontend.')->group(function () {
+Route::middleware('maintenance')->name('frontend.')->group(function () {
+
 
     //home routes
     Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -93,9 +99,7 @@ Route::name('frontend.')->group(function () {
     Route::get('/tag/{slug}', [HomeController::class, 'tag'])
         ->name('tag.show');
 
-    //tag routes
-    // Route::get('/tag/{slug}', [FrontendTagController::class, 'show'])
-    //     ->name('tag.show');
+
 
     //contact routes
     Route::post('/contact-submit', [ContactController::class, 'store'])->name('contact.submit');
@@ -114,6 +118,14 @@ Route::name('frontend.')->group(function () {
     })->name('comments.load');
 
     //page routes
+
+    // Route::get('/test403', function () {
+    //     abort(403);
+    // });
+
+    // Route::get('/test500', function () {
+    //     abort(500);
+    // });
     Route::get('/{slug}', [FrontendPageController::class, 'show'])
         ->where('slug', '^(?!login|register|forgot-password|reset-password|verify-email|email|confirm-password|logout|profile|admin).*$')
         ->name('page');
@@ -388,7 +400,50 @@ Route::prefix('admin')
             '/activity-logs',
             [ActivityLogController::class, 'clear']
         )->name('activity.clear');
+
+
+        //system routes
+        Route::post('/system/cache-clear', [SystemController::class, 'clearCache'])
+            ->name('system.cache');
+
+        Route::post('/system/config-clear', [SystemController::class, 'clearConfig'])
+            ->name('system.config');
+
+        Route::post('/system/route-clear', [SystemController::class, 'clearRoute'])
+            ->name('system.route');
+
+        Route::post('/system/view-clear', [SystemController::class, 'clearView'])
+            ->name('system.view');
+
+        Route::post('/system/optimize', [SystemController::class, 'optimize'])
+            ->name('system.optimize');
+
+        Route::post('/system/optimize-clear', [SystemController::class, 'optimizeClear'])
+            ->name('system.optimizeClear');
+        Route::post('/system/maintenance-on', [SystemController::class, 'maintenanceOn'])
+            ->name('system.maintenance.on');
+
+        Route::post('/system/maintenance-off', [SystemController::class, 'maintenanceOff'])
+            ->name('system.maintenance.off');
+
+
+        Route::prefix('backup')->name('backup.')->group(function () {
+
+            Route::get('/', [BackupController::class, 'index'])
+                ->name('index');
+
+            Route::post('/create', [BackupController::class, 'create'])
+                ->name('create');
+
+            Route::get('/download/{file}', [BackupController::class, 'download'])
+                ->name('download');
+
+            Route::delete('/delete/{file}', [BackupController::class, 'delete'])
+                ->name('delete');
+        });
     });
+
+
 
 // Route::middleware('auth')->group(function () {
 //     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

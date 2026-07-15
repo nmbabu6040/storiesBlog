@@ -117,6 +117,12 @@
 
                 </form>
 
+                <button id="themeToggleFrontend" type="button" class="btn btn-outline-secondary btn-sm ms-2">
+
+                    🌙
+
+                </button>
+
             </div>
 
         </div>

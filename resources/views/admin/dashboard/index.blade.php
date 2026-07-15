@@ -439,6 +439,153 @@
 
     </div>
 
+    <div class="card mt-4">
+
+        <div class="card-header">
+
+            <h5>System Tools</h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-4 mb-3">
+
+                    <form action="{{ route('admin.system.cache') }}" method="POST">
+
+                        @csrf
+
+                        <button class="btn btn-primary w-100">
+
+                            Clear Cache
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <form action="{{ route('admin.system.config') }}" method="POST">
+
+                        @csrf
+
+                        <button class="btn btn-success w-100">
+
+                            Clear Config
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <form action="{{ route('admin.system.route') }}" method="POST">
+
+                        @csrf
+
+                        <button class="btn btn-warning w-100">
+
+                            Clear Route
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <form action="{{ route('admin.system.view') }}" method="POST">
+
+                        @csrf
+
+                        <button class="btn btn-info w-100">
+
+                            Clear View
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <form action="{{ route('admin.system.optimize') }}" method="POST">
+
+                        @csrf
+
+                        <button class="btn btn-dark w-100">
+
+                            Optimize
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <form action="{{ route('admin.system.optimizeClear') }}" method="POST">
+
+                        @csrf
+
+                        <button class="btn btn-danger w-100">
+
+                            Optimize Clear
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <form action="{{ route('admin.system.maintenance.on') }}" method="POST">
+
+                        @csrf
+
+                        <button class="btn btn-warning w-100">
+
+                            Enable Maintenance Mode
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <form action="{{ route('admin.system.maintenance.off') }}" method="POST">
+
+                        @csrf
+
+                        <button class="btn btn-success w-100">
+
+                            Disable Maintenance Mode
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 @endsection
 
 @push('scripts')

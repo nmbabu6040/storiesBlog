@@ -35,14 +35,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 
-Route::get('/force-logout', function () {
-    Auth::logout();
+// Route::get('/force-logout', function () {
+//     Auth::logout();
 
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
+//     request()->session()->invalidate();
+//     request()->session()->regenerateToken();
 
-    return redirect('/');
-});
+//     return redirect('/');
+// });
 
 // Route::get('/mail-test', function () {
 
@@ -56,32 +56,36 @@ Route::get('/force-logout', function () {
 // });
 
 // Generate Sitemap
-Route::get('/generate-sitemap', function () {
 
-    $sitemap = Sitemap::create();
+Route::middleware(['auth', 'role:Super Admin'])->group(function () {
 
-    $posts = Post::where('status', 1)
-        ->where('review_status', 'approved')
-        ->get();
+    Route::get('/generate-sitemap', function () {
 
-    foreach ($posts as $post) {
+        $sitemap = Sitemap::create();
 
-        $url = Url::create(route('frontend.post.show', $post->slug));
+        $posts = Post::where('status', 1)
+            ->where('review_status', 'approved')
+            ->get();
 
-        if ($post->thumbnail) {
+        foreach ($posts as $post) {
 
-            $url->addImage(asset('storage/' . $post->thumbnail));
+            $url = Url::create(route('frontend.post.show', $post->slug));
+
+            if ($post->thumbnail) {
+
+                $url->addImage(asset('storage/' . $post->thumbnail));
+            }
+
+            $sitemap->add($url);
         }
 
-        $sitemap->add($url);
-    }
+        $sitemap->writeToFile(public_path('sitemap.xml'));
 
-    $sitemap->writeToFile(public_path('sitemap.xml'));
-
-    return 'Sitemap Generated Successfully';
+        return 'Sitemap Generated Successfully';
+    });
 });
 
-//temporary routes
+
 
 /*
 |--------------------------------------------------------------------------
@@ -320,8 +324,10 @@ Route::prefix('admin')
         )->name('media.forceDelete');
 
         // Summernote
-        Route::post('/summernote/upload', [App\Http\Controllers\Admin\SummernoteController::class, 'upload'])
-            ->name('summernote.upload');
+        Route::post(
+            '/summernote/upload',
+            [SummernoteController::class, 'upload']
+        )->name('summernote.upload');
 
         // Advertisements
         Route::resource('advertisements', AdvertisementController::class)
@@ -332,7 +338,7 @@ Route::prefix('admin')
         Route::delete('advertisements/{id}/force-delete', [AdvertisementController::class, 'forceDelete'])->name('advertisements.forceDelete');
 
         //tags
-        Route::resource('tags', TagController::class);;
+        Route::resource('tags', TagController::class);
 
         Route::get(
             'tags-trash',
@@ -427,29 +433,22 @@ Route::prefix('admin')
             ->name('system.maintenance.off');
 
 
-        Route::prefix('backup')->name('backup.')->group(function () {
+        //backup routes
+        Route::middleware('permission:manage-settings')->prefix('backup')->name('backup.')->group(function () {
 
-            Route::get('/', [BackupController::class, 'index'])
-                ->name('index');
+            Route::get('/', [BackupController::class, 'index'])->name('index');
 
-            Route::post('/create', [BackupController::class, 'create'])
-                ->name('create');
+            Route::post('/create', [BackupController::class, 'create'])->name('create');
 
-            Route::get('/download/{file}', [BackupController::class, 'download'])
-                ->name('download');
+            Route::get('/download/{file}', [BackupController::class, 'download'])->name('download');
 
-            Route::delete('/delete/{file}', [BackupController::class, 'delete'])
-                ->name('delete');
+            Route::delete('/delete/{file}', [BackupController::class, 'delete'])->name('delete');
         });
     });
 
 
 
-// Route::middleware('auth')->group(function () {
-//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-// });
+
 
 
 require __DIR__ . '/auth.php';

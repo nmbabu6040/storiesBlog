@@ -14,78 +14,66 @@ Alpine.start();
 import Chart from "chart.js/auto";
 window.Chart = Chart;
 
+//admin dark theme toggle
 document.addEventListener("DOMContentLoaded", function () {
-    const theme = localStorage.getItem("theme");
+    const adminBtn = document.getElementById("themeToggle");
 
-    if (theme === "dark") {
+    if (!adminBtn) return;
+
+    // Load admin theme only
+    if (localStorage.getItem("admin-theme") === "dark") {
         document.body.classList.add("dark-mode");
     }
-});
 
-//admin toggle
-document.addEventListener("DOMContentLoaded", function () {
-    const btn = document.getElementById("themeToggle");
+    updateAdminButton();
 
-    if (!btn) return;
-
-    btn.addEventListener("click", function () {
+    adminBtn.addEventListener("click", function () {
         document.body.classList.toggle("dark-mode");
 
         if (document.body.classList.contains("dark-mode")) {
-            localStorage.setItem("theme", "dark");
-
-            btn.innerHTML = "☀️";
+            localStorage.setItem("admin-theme", "dark");
         } else {
-            localStorage.setItem("theme", "light");
-
-            btn.innerHTML = "🌙";
+            localStorage.setItem("admin-theme", "light");
         }
+
+        updateAdminButton();
     });
 
-    if (localStorage.getItem("theme") === "dark") {
-        btn.innerHTML = "☀️";
+    function updateAdminButton() {
+        adminBtn.innerHTML = document.body.classList.contains("dark-mode")
+            ? "☀️"
+            : "🌙";
     }
 });
 
-//frontend toggle
+//user dark mode theme toggle
 document.addEventListener("DOMContentLoaded", function () {
-    const adminBtn = document.getElementById("themeToggle");
     const frontBtn = document.getElementById("themeToggleFrontend");
 
-    function updateButtons() {
-        const dark = document.body.classList.contains("dark-mode");
+    if (!frontBtn) return;
 
-        if (adminBtn) {
-            adminBtn.innerHTML = dark ? "☀️" : "🌙";
-        }
-
-        if (frontBtn) {
-            frontBtn.innerHTML = dark ? "☀️" : "🌙";
-        }
-    }
-
-    function toggleTheme() {
-        document.body.classList.toggle("dark-mode");
-
-        localStorage.setItem(
-            "theme",
-            document.body.classList.contains("dark-mode") ? "dark" : "light",
-        );
-
-        updateButtons();
-    }
-
-    if (adminBtn) {
-        adminBtn.addEventListener("click", toggleTheme);
-    }
-
-    if (frontBtn) {
-        frontBtn.addEventListener("click", toggleTheme);
-    }
-
-    if (localStorage.getItem("theme") === "dark") {
+    // Load frontend theme only
+    if (localStorage.getItem("frontend-theme") === "dark") {
         document.body.classList.add("dark-mode");
     }
 
-    updateButtons();
+    updateFrontendButton();
+
+    frontBtn.addEventListener("click", function () {
+        document.body.classList.toggle("dark-mode");
+
+        if (document.body.classList.contains("dark-mode")) {
+            localStorage.setItem("frontend-theme", "dark");
+        } else {
+            localStorage.setItem("frontend-theme", "light");
+        }
+
+        updateFrontendButton();
+    });
+
+    function updateFrontendButton() {
+        frontBtn.innerHTML = document.body.classList.contains("dark-mode")
+            ? "☀️"
+            : "🌙";
+    }
 });

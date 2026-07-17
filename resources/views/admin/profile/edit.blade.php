@@ -96,7 +96,8 @@
 
                             <label>Current Password</label>
 
-                            <input type="password" name="current_password" class="form-control">
+                            <input type="password" name="current_password" class="form-control"
+                                autocomplete="current-password">
 
                         </div>
 
@@ -104,7 +105,7 @@
 
                             <label>New Password</label>
 
-                            <input type="password" name="password" class="form-control">
+                            <input type="password" name="password" class="form-control" autocomplete="new-password">
 
                         </div>
 
@@ -112,7 +113,8 @@
 
                             <label>Confirm Password</label>
 
-                            <input type="password" name="password_confirmation" class="form-control">
+                            <input type="password" name="password_confirmation" class="form-control"
+                                autocomplete="new-password">
 
                         </div>
 

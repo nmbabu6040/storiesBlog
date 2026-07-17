@@ -122,14 +122,6 @@ Route::middleware('maintenance')->name('frontend.')->group(function () {
     })->name('comments.load');
 
     //page routes
-
-    // Route::get('/test403', function () {
-    //     abort(403);
-    // });
-
-    // Route::get('/test500', function () {
-    //     abort(500);
-    // });
     Route::get('/{slug}', [FrontendPageController::class, 'show'])
         ->where('slug', '^(?!login|register|forgot-password|reset-password|verify-email|email|confirm-password|logout|profile|admin).*$')
         ->name('page');
@@ -220,6 +212,14 @@ Route::prefix('admin')
         Route::delete('/comments/{comment}', [AdminCommentController::class, 'destroy'])
             ->name('comments.destroy')
             ->middleware('permission:manage-comments');
+        Route::get('/comments/trash', [AdminCommentController::class, 'trash'])
+            ->name('comments.trash');
+
+        Route::patch('/comments/{id}/restore', [AdminCommentController::class, 'restore'])
+            ->name('comments.restore');
+
+        Route::delete('/comments/{id}/force-delete', [AdminCommentController::class, 'forceDelete'])
+            ->name('comments.forceDelete');
 
         // Messages
         Route::get(
@@ -305,8 +305,13 @@ Route::prefix('admin')
             ->middleware('permission:manage-settings');
 
         // Media
+
         Route::resource('media', MediaController::class)
-            ->parameter('media', 'media');
+            ->except([
+                'show',
+                'edit',
+                'update'
+            ]);
 
         Route::get(
             'media-trash',

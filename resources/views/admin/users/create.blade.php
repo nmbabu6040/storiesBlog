@@ -8,7 +8,7 @@
         Create User
     </h3>
 
-    <form action="{{ route('admin.users.store') }}" method="POST">
+    <form action="{{ route('admin.users.store') }}" method="POST" enctype="multipart/form-data">
 
         @csrf
 
@@ -28,6 +28,15 @@
 
                     <input type="email" name="email" class="form-control" value="{{ old('email') }}">
 
+                </div>
+
+                <div class="mb-3">
+                    <label>Profile Image</label>
+
+                    <input type="file" name="image" class="form-control">
+                    @error('image')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                 </div>
 
                 <div class="mb-3">

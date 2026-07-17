@@ -14,40 +14,46 @@ class ProfileController extends Controller
         return view('admin.profile.edit');
     }
 
+
+
     public function update(Request $request)
     {
         $user = auth()->user();
 
         $request->validate([
-            'name' => 'required|max:255',
+            'name'  => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'image' => 'nullable|image|max:2048',
-            'bio' => 'nullable|max:1000',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'bio'   => 'nullable|max:1000',
         ]);
 
         $image = $user->image;
 
         if ($request->hasFile('image')) {
 
-            if ($image) {
+            if (
+                $image &&
+                Storage::disk('public')->exists($image)
+            ) {
                 Storage::disk('public')->delete($image);
             }
 
-            $image = $request->file('image')
+            $image = $request
+                ->file('image')
                 ->store('profile', 'public');
         }
 
         $user->update([
-            'name' => $request->name,
+            'name'  => $request->name,
             'email' => $request->email,
-            'bio' => $request->bio,
+            'bio'   => $request->bio,
             'image' => $image,
         ]);
 
         activityLog(
             'Profile',
             'Update',
-            auth()->user()->name . ' updated profile.'
+            $user->name
         );
 
         return back()->with(
@@ -81,8 +87,8 @@ class ProfileController extends Controller
 
         activityLog(
             'Profile',
-            'Password',
-            auth()->user()->name . ' changed password.'
+            'Password Changed',
+            $user->name
         );
 
         return back()->with(

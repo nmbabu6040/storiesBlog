@@ -119,10 +119,9 @@
         </div>
 
         {{-- Profile --}}
-        {{-- <img src="{{ asset('storage/' . auth()->user()->image ?? 'user.png') }}" class="rounded-circle"
-            style="width: 40px; height: 40px;" alt=""> --}}
+
         <img src="{{ auth()->user()->image ? asset('storage/' . auth()->user()->image) : asset('images/user.png') }}"
-            class="rounded-circle" style="width:40px;height:40px;object-fit:cover;" alt="User">
+            class="rounded-circle" width="40" height="40">
 
         <a href="{{ route('admin.profile.edit') }}" class="text-success text-decoration-none fw-bold">
 

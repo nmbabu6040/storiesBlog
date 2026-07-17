@@ -4,13 +4,28 @@ namespace App\Providers;
 
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\Page;
+use App\Policies\PagePolicy;
 use App\Models\Setting;
+use App\Policies\SettingPolicy;
 use App\Models\Menu;
+use App\Policies\MenuPolicy;
 use App\Models\Notification;
 use App\Models\Tag;
+use App\Policies\TagPolicy;
+use App\Models\Gallery;
+use App\Policies\GalleryPolicy;
+use App\Models\Media;
+use App\Policies\MediaPolicy;
+use App\Models\Comment;
+use App\Policies\CommentPolicy;
+use App\Models\User;
+use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Advertisement;
+use App\Policies\CategoryPolicy;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,6 +42,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(Category::class, CategoryPolicy::class);
+        Gate::policy(Page::class, PagePolicy::class);
+        Gate::policy(Menu::class, MenuPolicy::class);
+        Gate::policy(Gallery::class, GalleryPolicy::class);
+        Gate::policy(Media::class, MediaPolicy::class);
+        Gate::policy(User::class, UserPolicy::class);
+        Gate::policy(Tag::class, TagPolicy::class);
+        Gate::policy(Setting::class, SettingPolicy::class);
+        Gate::policy(Comment::class, CommentPolicy::class);
+
+
         View::composer('*', function ($view) {
 
             $categories = Category::where('status', 1)

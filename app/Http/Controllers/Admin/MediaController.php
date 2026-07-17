@@ -11,6 +11,7 @@ class MediaController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Media::class);
         $media = Media::latest()->paginate(20);
 
         return view('admin.media.index', compact('media'));
@@ -18,20 +19,22 @@ class MediaController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Media::class);
         return view('admin.media.create');
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', Media::class);
         $request->validate([
-            'image' => 'required|image|max:4096',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
 
         $file = $request->file('image');
 
         $path = $file->store('media', 'public');
 
-        Media::create([
+        $media = Media::create([
 
             'user_id' => auth()->id(),
 
@@ -70,6 +73,7 @@ class MediaController extends Controller
 
     public function destroy(Media $media)
     {
+        $this->authorize('delete', $media);
         activityLog(
             'Media',
             'Delete',
@@ -85,9 +89,17 @@ class MediaController extends Controller
     }
     public function restore($id)
     {
-        Media::onlyTrashed()
-            ->findOrFail($id)
-            ->restore();
+        $media = Media::onlyTrashed()->findOrFail($id);
+
+        $this->authorize('restore', $media);
+
+        $media->restore();
+
+        activityLog(
+            'Media',
+            'Restore',
+            $media->file_name
+        );
 
         return back()->with(
             'success',
@@ -100,11 +112,19 @@ class MediaController extends Controller
         $media = Media::onlyTrashed()
             ->findOrFail($id);
 
-        if ($media->file_path) {
+        $this->authorize('forceDelete', $media);
+
+        if ($media->file_path && Storage::disk('public')->exists($media->file_path)) {
 
             Storage::disk('public')
                 ->delete($media->file_path);
         }
+
+        activityLog(
+            'Media',
+            'Force Delete',
+            $media->file_name
+        );
 
         $media->forceDelete();
 

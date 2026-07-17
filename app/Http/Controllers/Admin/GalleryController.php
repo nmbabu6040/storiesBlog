@@ -11,7 +11,9 @@ class GalleryController extends Controller
 {
     public function index()
     {
-        $galleries = Gallery::latest()->get();
+        $this->authorize('viewAny', Gallery::class);
+
+        $galleries = Gallery::latest()->paginate(20);
 
         return view(
             'admin.gallery.index',
@@ -21,23 +23,31 @@ class GalleryController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Gallery::class);
+
         return view('admin.gallery.create');
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', Gallery::class);
         $request->validate([
             'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        Gallery::create([
-
+        $gallery = Gallery::create([
             'image' => $request
                 ->file('image')
                 ->store('gallery', 'public'),
 
-            'status' => 1
+            'status' => true,
         ]);
+
+        activityLog(
+            'Gallery',
+            'Create',
+            'Gallery Image #' . $gallery->id
+        );
 
         return redirect()
             ->route('admin.galleries.index')
@@ -46,6 +56,8 @@ class GalleryController extends Controller
 
     public function edit(Gallery $gallery)
     {
+        $this->authorize('update', $gallery);
+
         return view(
             'admin.gallery.edit',
             compact('gallery')
@@ -54,9 +66,21 @@ class GalleryController extends Controller
 
     public function update(Request $request, Gallery $gallery)
     {
-        $gallery->update([
-            'status' => $request->status ? 1 : 0
+        $this->authorize('update', $gallery);
+
+        $request->validate([
+            'status' => 'nullable|boolean',
         ]);
+
+        $gallery->update([
+            'status' => $request->boolean('status'),
+        ]);
+
+        activityLog(
+            'Gallery',
+            'Update',
+            'Gallery Image #' . $gallery->id
+        );
 
         return back()->with(
             'success',
@@ -64,37 +88,82 @@ class GalleryController extends Controller
         );
     }
 
+    public function destroy(Gallery $gallery)
+    {
+        $this->authorize('delete', $gallery);
+
+        activityLog(
+            'Gallery',
+            'Delete',
+            'Gallery Image #' . $gallery->id
+        );
+
+        $gallery->delete();
+
+        return back()->with(
+            'success',
+            'Gallery moved to trash.'
+        );
+    }
+
     public function trash()
     {
-        $galleries = Gallery::onlyTrashed()->latest('deleted_at')->paginate(10);
+        $this->authorize('viewAny', Gallery::class);
 
-        return view('admin.gallery.trash', compact('galleries'));
+        $galleries = Gallery::onlyTrashed()
+            ->latest('deleted_at')
+            ->paginate(20);
+
+        return view(
+            'admin.gallery.trash',
+            compact('galleries')
+        );
     }
 
     public function restore($id)
     {
-        Gallery::onlyTrashed()->findOrFail($id)->restore();
+        $gallery = Gallery::onlyTrashed()->findOrFail($id);
 
-        return back()->with('success', 'Gallery restored.');
+        $this->authorize('restore', $gallery);
+
+        $gallery->restore();
+
+        activityLog(
+            'Gallery',
+            'Restore',
+            'Gallery Image #' . $gallery->id
+        );
+
+        return back()->with(
+            'success',
+            'Gallery restored.'
+        );
     }
 
     public function forceDelete($id)
     {
         $gallery = Gallery::onlyTrashed()->findOrFail($id);
 
-        if ($gallery->image) {
+        $this->authorize('forceDelete', $gallery);
+
+        if (
+            $gallery->image &&
+            Storage::disk('public')->exists($gallery->image)
+        ) {
             Storage::disk('public')->delete($gallery->image);
         }
 
+        activityLog(
+            'Gallery',
+            'Permanent Delete',
+            'Gallery Image #' . $gallery->id
+        );
+
         $gallery->forceDelete();
 
-        return back()->with('success', 'Gallery permanently deleted.');
-    }
-
-    public function destroy(Gallery $gallery)
-    {
-        $gallery->delete();
-
-        return back()->with('success', 'Gallery moved to trash.');
+        return back()->with(
+            'success',
+            'Gallery permanently deleted.'
+        );
     }
 }

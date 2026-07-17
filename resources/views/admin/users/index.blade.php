@@ -30,6 +30,7 @@
                         <th>#</th>
                         <th>Name</th>
                         <th>Email</th>
+                        <th>Profile Image</th>
                         <th>Role</th>
                         <th width="180">Action</th>
 
@@ -47,6 +48,18 @@
                             <td>{{ $user->name }}</td>
 
                             <td>{{ $user->email }}</td>
+
+                            <td>
+
+                                @if ($user->image)
+                                    <img src="{{ asset('storage/' . $user->image) }}" width="45" height="45"
+                                        class="rounded-circle">
+                                @else
+                                    <img src="{{ asset('images/user.png') }}" width="45" height="45"
+                                        class="rounded-circle">
+                                @endif
+
+                            </td>
 
                             <td>
                                 {{ $user->roles->pluck('name')->implode(', ') }}

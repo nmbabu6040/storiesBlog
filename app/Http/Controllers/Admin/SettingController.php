@@ -13,9 +13,13 @@ class SettingController extends Controller
     public function edit()
     {
         $setting = Setting::first();
+
+        $this->authorize('view', $setting);
+
         $categories = Category::where('status', 1)
             ->orderBy('name')
             ->get();
+
         return view(
             'admin.settings.edit',
             compact('setting', 'categories')
@@ -24,6 +28,10 @@ class SettingController extends Controller
 
     public function update(Request $request)
     {
+        $setting = Setting::first();
+
+        $this->authorize('update', $setting);
+
         $request->validate([
 
             'site_name' => 'nullable|string|max:255',
@@ -82,7 +90,7 @@ class SettingController extends Controller
 
         ]);
 
-        $setting = Setting::first();
+
 
         $data = $request->only([
 
@@ -168,6 +176,12 @@ class SettingController extends Controller
         }
 
         $setting->update($data);
+
+        activityLog(
+            'Settings',
+            'Update',
+            'Website settings updated'
+        );
 
         return back()->with(
             'success',

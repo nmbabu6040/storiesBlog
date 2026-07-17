@@ -85,7 +85,6 @@ class PostController extends Controller
         //slug
         $slug = Str::slug($request->title);
 
-        //post count
         $count = \App\Models\Post::where('slug', 'LIKE', "{$slug}%")->count();
 
         if ($count > 0) {
@@ -124,7 +123,12 @@ class PostController extends Controller
 
             'meta_description' => $request->meta_description,
 
-            'featured' => $request->featured ? 1 : 0,
+            'featured' => auth()->user()->hasAnyRole([
+                'Super Admin',
+                'Admin'
+            ])
+                ? ($request->featured ? 1 : 0)
+                : 0,
 
             'status' => auth()->user()->hasAnyRole([
                 'Super Admin',
@@ -136,14 +140,17 @@ class PostController extends Controller
 
         ]);
 
+        //tags
         $post->tags()->sync($request->tags ?? []);
 
+        //activity log
         activityLog(
             'Post',
             'Create',
             $post->title
         );
 
+        //notification
         if ($post->review_status == 'pending') {
 
             createNotification(
@@ -267,14 +274,25 @@ class PostController extends Controller
 
             'meta_description' => $request->meta_description,
 
-            'featured' => $request->featured ? 1 : 0,
+            'featured' => auth()->user()->hasAnyRole([
+                'Super Admin',
+                'Admin'
+            ])
+                ? ($request->featured ? 1 : 0)
+                : 0,
 
-            'status' => $request->status ? 1 : 0
+            'status' => auth()->user()->hasAnyRole([
+                'Super Admin',
+                'Admin',
+                'Editor'
+            ]) ? ($request->status ? 1 : 0) : 0,
 
         ]);
 
+        //tags
         $post->tags()->sync($request->tags ?? []);
 
+        //activity log
         activityLog(
             'Post',
             'Update',
@@ -289,22 +307,42 @@ class PostController extends Controller
             );
     }
 
+
+
     public function trash()
     {
-        $posts = Post::onlyTrashed()
-            ->with('category')
-            ->latest('deleted_at')
-            ->paginate(10);
+        if (auth()->user()->hasAnyRole(['Super Admin', 'Admin', 'Editor'])) {
+
+            $posts = Post::onlyTrashed()
+                ->with('category')
+                ->latest('deleted_at')
+                ->paginate(10);
+        } else {
+
+            $posts = Post::onlyTrashed()
+                ->where('user_id', auth()->id())
+                ->with('category')
+                ->latest('deleted_at')
+                ->paginate(10);
+        }
 
         return view('admin.post.trash', compact('posts'));
     }
 
     public function restore($id)
     {
-        Post::onlyTrashed()
-            ->findOrFail($id)
-            ->restore();
+        $post = Post::onlyTrashed()->findOrFail($id);
 
+        $this->authorize('restore', $post);
+
+        $post->restore();
+
+        //activity log
+        activityLog(
+            'Post',
+            'Restore',
+            $post->title
+        );
         return redirect()
             ->route('admin.posts.trash')
             ->with('success', 'Post restored successfully.');
@@ -329,6 +367,8 @@ class PostController extends Controller
 
     public function forceDelete($id)
     {
+        $this->authorize('forceDelete', $post);
+
         $post = Post::onlyTrashed()->findOrFail($id);
 
         if ($post->thumbnail) {
@@ -337,6 +377,13 @@ class PostController extends Controller
         }
 
         $post->forceDelete();
+
+        //activity log
+        activityLog(
+            'Post',
+            'Permanent Delete',
+            $post->title
+        );
 
         return redirect()
             ->route('admin.posts.trash')
@@ -347,6 +394,16 @@ class PostController extends Controller
 
     public function approve(Post $post)
     {
+        abort_unless(
+            auth()->user()->hasAnyRole([
+                'Super Admin',
+                'Admin',
+                'Editor'
+            ]),
+            403
+        );
+
+
         $post->update([
 
             'review_status' => 'approved',

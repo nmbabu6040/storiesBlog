@@ -5,10 +5,26 @@
 @section('content')
 
     <h3 class="mb-4">
-        Create User
+        Edit User
     </h3>
 
-    <form action="{{ route('admin.users.update', $user) }}') }}" method="POST">
+    @if ($errors->any())
+
+        <div class="alert alert-danger">
+
+            <ul class="mb-0">
+
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+
+            </ul>
+
+        </div>
+
+    @endif
+
+    <form action="{{ route('admin.users.update', $user) }}" method="POST" enctype="multipart/form-data" autocomplete="off">
 
         @csrf
         @method('PUT')
@@ -16,6 +32,7 @@
         <div class="card">
 
             <div class="card-body">
+
 
                 <div class="mb-3">
                     <label>Name</label>
@@ -32,9 +49,27 @@
                 </div>
 
                 <div class="mb-3">
+                    <label>Profile Image</label>
+
+                    @if ($user->image)
+                        <div class="mb-2">
+
+                            <img src="{{ asset('storage/' . $user->image) }}" width="100" class="rounded">
+
+                        </div>
+                    @endif
+
+                    <input type="file" name="image" class="form-control">
+
+                    @error('image')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
                     <label>Password</label>
 
-                    <input type="password" name="password" class="form-control" value="{{ old('password') }}">
+                    <input type="password" name="password" class="form-control" autocomplete="new-password">
 
                     <small class="text-muted">
 
@@ -42,13 +77,19 @@
 
                     </small>
 
+                    @error('password')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+
                 </div>
 
                 <div class="mb-3">
                     <label>Confirm Password</label>
 
-                    <input type="password" name="password_confirmation" class="form-control">
-
+                    <input type="password" name="password_confirmation" class="form-control" autocomplete="new-password">
+                    @error('password_confirmation')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                 </div>
 
                 <div class="mb-3">

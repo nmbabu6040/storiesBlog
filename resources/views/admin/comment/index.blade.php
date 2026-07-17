@@ -8,6 +8,12 @@
         Comments
     </h3>
 
+    <div class="d-flex gap-2">
+        <a href="{{ route('admin.comments.trash') }}" class="btn btn-warning mb-3">
+            Trash
+        </a>
+    </div>
+
     @if (session('success'))
         <div class="alert alert-success">
 

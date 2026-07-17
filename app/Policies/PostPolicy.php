@@ -14,7 +14,11 @@ class PostPolicy
 
     public function view(User $user, Post $post): bool
     {
-        return true;
+        if ($user->hasAnyRole(['Super Admin', 'Admin', 'Editor'])) {
+            return true;
+        }
+
+        return $post->user_id === $user->id;
     }
 
     public function create(User $user): bool
@@ -46,5 +50,27 @@ class PostPolicy
         }
 
         return $post->user_id === $user->id;
+    }
+
+    public function restore(User $user, Post $post): bool
+    {
+        if ($user->hasAnyRole(['Super Admin', 'Admin'])) {
+            return true;
+        }
+
+        if ($user->hasRole('Editor')) {
+            return true;
+        }
+
+        return $post->user_id === $user->id;
+    }
+
+    public function forceDelete(User $user, Post $post): bool
+    {
+        if ($user->hasAnyRole(['Super Admin', 'Admin'])) {
+            return true;
+        }
+
+        return false;
     }
 }

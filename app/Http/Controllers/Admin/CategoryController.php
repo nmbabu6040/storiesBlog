@@ -12,7 +12,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::latest()->get();
+        $categories = Category::latest()->paginate(10);
 
         return view(
             'admin.category.index',
@@ -22,16 +22,21 @@ class CategoryController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Category::class);
+
         return view('admin.category.create');
     }
 
     public function store(Request $request)
     {
+
+        $this->authorize('create', Category::class);
         $request->validate([
             'name' => 'required|unique:categories,name',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+        //images
         $image = null;
 
         if ($request->hasFile('image')) {
@@ -41,13 +46,22 @@ class CategoryController extends Controller
                 ->store('categories', 'public');
         }
 
-        Category::create([
+        //slug
+        $slug = Str::slug($request->name);
+
+        $count = Category::where('slug', 'LIKE', "{$slug}%")->count();
+
+        if ($count > 0) {
+            $slug .= '-' . ($count + 1);
+        }
+
+        $category = Category::create([
 
             'name' => $request->name,
 
             'image' => $image,
 
-            'slug' => Str::slug($request->name),
+            'slug' => $slug,
 
             'status' => $request->status ? 1 : 0
 
@@ -69,6 +83,8 @@ class CategoryController extends Controller
 
     public function edit(Category $category)
     {
+
+        $this->authorize('update', $category);
         return view(
             'admin.category.edit',
             compact('category')
@@ -77,16 +93,23 @@ class CategoryController extends Controller
 
     public function update(Request $request, Category $category)
     {
-        $request->validate([
-            'name' => 'required|unique:categories,name,' . $category->id
 
+        $this->authorize('update', $category);
+
+        $request->validate([
+            'name' => 'required|unique:categories,name,' . $category->id,
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+        //images
         $image = $category->image;
 
         if ($request->hasFile('image')) {
 
-            if ($category->image) {
+            if (
+                $category->image &&
+                Storage::disk('public')->exists($category->image)
+            ) {
 
                 Storage::disk('public')
                     ->delete($category->image);
@@ -97,13 +120,34 @@ class CategoryController extends Controller
                 ->store('categories', 'public');
         }
 
+        //slug
+        $slug = Str::slug($request->name);
+
+        if ($category->name !== $request->name) {
+
+            $originalSlug = $slug;
+            $i = 1;
+
+            while (
+                Category::where('slug', $slug)
+                ->where('id', '!=', $category->id)
+                ->exists()
+            ) {
+                $slug = $originalSlug . '-' . $i;
+                $i++;
+            }
+        } else {
+
+            $slug = $category->slug;
+        }
+
         $category->update([
 
             'name' => $request->name,
 
             'image' => $image,
 
-            'slug' => Str::slug($request->name),
+            'slug' => $slug,
 
             'status' => $request->status ? 1 : 0
 
@@ -127,6 +171,9 @@ class CategoryController extends Controller
 
     public function trash()
     {
+
+        $this->authorize('viewAny', Category::class);
+
         $categories = Category::onlyTrashed()
             ->latest('deleted_at')
             ->paginate(10);
@@ -136,17 +183,28 @@ class CategoryController extends Controller
 
     public function restore($id)
     {
-        Category::onlyTrashed()
-            ->findOrFail($id)
-            ->restore();
+        $category = Category::onlyTrashed()->findOrFail($id);
+
+        $this->authorize('restore', $category);
+
+        $category->restore();
+
+        activityLog(
+            'Category',
+            'Restore',
+            $category->name
+        );
 
         return redirect()
             ->route('admin.categories.trash')
-            ->with('success', 'Post restored successfully.');
+            ->with('success', 'Category restored successfully.');
     }
 
     public function destroy(Category $category)
     {
+
+        $this->authorize('delete', $category);
+
         activityLog(
             'Category',
             'Delete',
@@ -165,10 +223,25 @@ class CategoryController extends Controller
 
     public function forceDelete($id)
     {
-        $category = Category::onlyTrashed()
-            ->findOrFail($id);
+
+        $category = Category::onlyTrashed()->findOrFail($id);
+
+        $this->authorize('forceDelete', $category);
+
+        if (
+            $category->image &&
+            Storage::disk('public')->exists($category->image)
+        ) {
+            Storage::disk('public')->delete($category->image);
+        }
 
         $category->forceDelete();
+
+        activityLog(
+            'Category',
+            'Permanent Delete',
+            $category->name
+        );
 
         return redirect()
             ->route('admin.categories.trash')

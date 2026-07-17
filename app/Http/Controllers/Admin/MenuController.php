@@ -15,14 +15,21 @@ class MenuController extends Controller
      */
     public function index()
     {
-        $menus = Menu::with(['parent', 'category'])
-            ->orderBy('sort_order')
-            ->latest()
-            ->get();
+        $this->authorize('viewAny', Menu::class);
 
-        return view('admin.menus.index', [
-            'adminMenus' => $menus,
-        ]);
+        $menus = Menu::with([
+            'parent',
+            'category'
+        ])
+            ->orderBy('sort_order')
+            ->paginate(20);
+
+        return view(
+            'admin.menus.index',
+            [
+                'adminMenus' => $menus
+            ]
+        );
     }
 
     /**
@@ -30,19 +37,28 @@ class MenuController extends Controller
      */
     public function create()
     {
-        $categories = Category::where('status', 1)->get();
+        $this->authorize('create', Menu::class);
 
-        $pages = Page::where('status', 1)
+        $categories = Category::whereStatus(1)
+            ->orderBy('name')
+            ->get();
+
+        $pages = Page::whereStatus(1)
             ->orderBy('title')
             ->pluck('title', 'slug');
 
-        $parents = Menu::orderBy('name')->get();
+        $parents = Menu::whereNull('parent_id')
+            ->orderBy('name')
+            ->get();
 
-        return view('admin.menus.create', compact(
-            'categories',
-            'pages',
-            'parents'
-        ));
+        return view(
+            'admin.menus.create',
+            compact(
+                'categories',
+                'pages',
+                'parents'
+            )
+        );
     }
 
     /**
@@ -50,7 +66,10 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Menu::class);
+
         $request->validate([
+
             'name' => 'required|max:255',
 
             'type' => 'required|in:custom,page,category',
@@ -63,11 +82,12 @@ class MenuController extends Controller
 
             'page_slug' => 'required_if:type,page|nullable',
 
-            'url' => 'required_if:type,custom|nullable|string',
+            'url' => 'required_if:type,custom|nullable|string|max:500',
 
             'target' => 'required|in:_self,_blank',
 
             'sort_order' => 'nullable|integer|min:0',
+
         ]);
 
         $data = [
@@ -115,7 +135,13 @@ class MenuController extends Controller
                 break;
         }
 
-        Menu::create($data);
+        $menu = Menu::create($data);
+
+        activityLog(
+            'Menu',
+            'Create',
+            $menu->name
+        );
 
         return redirect()
             ->route('admin.menus.index')
@@ -138,22 +164,30 @@ class MenuController extends Controller
      */
     public function edit(Menu $menu)
     {
-        $categories = Category::where('status', 1)->get();
+        $this->authorize('update', $menu);
 
-        $pages = Page::where('status', 1)
+        $categories = Category::whereStatus(1)
+            ->orderBy('name')
+            ->get();
+
+        $pages = Page::whereStatus(1)
             ->orderBy('title')
             ->pluck('title', 'slug');
 
         $parents = Menu::where('id', '!=', $menu->id)
+            ->whereNull('parent_id')
             ->orderBy('name')
             ->get();
 
-        return view('admin.menus.edit', compact(
-            'menu',
-            'categories',
-            'pages',
-            'parents'
-        ));
+        return view(
+            'admin.menus.edit',
+            compact(
+                'menu',
+                'categories',
+                'pages',
+                'parents'
+            )
+        );
     }
 
     /**
@@ -161,7 +195,10 @@ class MenuController extends Controller
      */
     public function update(Request $request, Menu $menu)
     {
+        $this->authorize('update', $menu);
+
         $request->validate([
+
             'name' => 'required|max:255',
 
             'type' => 'required|in:custom,page,category',
@@ -174,12 +211,23 @@ class MenuController extends Controller
 
             'page_slug' => 'required_if:type,page|nullable',
 
-            'url' => 'required_if:type,custom|nullable|string',
+            'url' => 'required_if:type,custom|nullable|string|max:500',
 
             'target' => 'required|in:_self,_blank',
 
             'sort_order' => 'nullable|integer|min:0',
+
         ]);
+
+        // Prevent self-parenting
+        if ($request->parent_id == $menu->id) {
+
+            return back()
+                ->withErrors([
+                    'parent_id' => 'A menu cannot be its own parent.'
+                ])
+                ->withInput();
+        }
 
         $data = [
 
@@ -228,6 +276,12 @@ class MenuController extends Controller
 
         $menu->update($data);
 
+        activityLog(
+            'Menu',
+            'Update',
+            $menu->name
+        );
+
         return redirect()
             ->route('admin.menus.index')
             ->with(
@@ -236,47 +290,83 @@ class MenuController extends Controller
             );
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    // public function trash()
-    // {
-    //     $menus = Menu::onlyTrashed()
-    //         ->latest('deleted_at')
-    //         ->paginate(10);
-
-    //     return view('admin.menus.trash', compact('menus'));
-    // }
-
     public function trash()
     {
+        $this->authorize('viewAny', Menu::class);
+
         $trashMenus = Menu::onlyTrashed()
             ->latest('deleted_at')
             ->paginate(10);
 
-        // dd(get_class($menus));
-
-        return view('admin.menus.trash', compact('trashMenus'));
+        return view(
+            'admin.menus.trash',
+            compact('trashMenus')
+        );
     }
 
     public function restore($id)
     {
-        Menu::onlyTrashed()->findOrFail($id)->restore();
+        $menu = Menu::onlyTrashed()
+            ->findOrFail($id);
 
-        return back()->with('success', 'Menu restored.');
+        $this->authorize('restore', $menu);
+
+        $menu->restore();
+
+        activityLog(
+            'Menu',
+            'Restore',
+            $menu->name
+        );
+
+        return redirect()
+            ->route('admin.menus.trash')
+            ->with(
+                'success',
+                'Menu restored successfully.'
+            );
     }
 
     public function forceDelete($id)
     {
-        Menu::onlyTrashed()->findOrFail($id)->forceDelete();
+        $menu = Menu::onlyTrashed()
+            ->findOrFail($id);
 
-        return back()->with('success', 'Menu permanently deleted.');
+        $this->authorize('forceDelete', $menu);
+
+        activityLog(
+            'Menu',
+            'Permanent Delete',
+            $menu->name
+        );
+
+        $menu->forceDelete();
+
+        return redirect()
+            ->route('admin.menus.trash')
+            ->with(
+                'success',
+                'Menu permanently deleted.'
+            );
     }
 
     public function destroy(Menu $menu)
     {
+        $this->authorize('delete', $menu);
+
+        activityLog(
+            'Menu',
+            'Delete',
+            $menu->name
+        );
+
         $menu->delete();
 
-        return back()->with('success', 'Menu moved to trash.');
+        return redirect()
+            ->route('admin.menus.index')
+            ->with(
+                'success',
+                'Menu moved to trash.'
+            );
     }
 }

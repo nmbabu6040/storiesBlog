@@ -21,9 +21,12 @@ use App\Models\Comment;
 use App\Policies\CommentPolicy;
 use App\Models\User;
 use App\Policies\UserPolicy;
+use App\Models\ContactMessage;
+use App\Policies\ContactMessagePolicy;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Advertisement;
+use App\Policies\AdvertisementPolicy;
 use App\Policies\CategoryPolicy;
 use Illuminate\Support\Facades\Gate;
 
@@ -51,6 +54,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Tag::class, TagPolicy::class);
         Gate::policy(Setting::class, SettingPolicy::class);
         Gate::policy(Comment::class, CommentPolicy::class);
+        Gate::policy(ContactMessage::class, ContactMessagePolicy::class);
+        Gate::policy(Advertisement::class, AdvertisementPolicy::class);
 
 
         View::composer('*', function ($view) {

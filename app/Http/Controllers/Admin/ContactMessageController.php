@@ -9,6 +9,7 @@ class ContactMessageController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', ContactMessage::class);
         $messages = ContactMessage::query()
             ->latest()
             ->paginate(10);
@@ -18,6 +19,7 @@ class ContactMessageController extends Controller
 
     public function destroy(ContactMessage $message)
     {
+        $this->authorize('delete', $message);
         activityLog(
 
             'Message',
@@ -37,6 +39,7 @@ class ContactMessageController extends Controller
 
     public function trash()
     {
+        $this->authorize('viewAny', ContactMessage::class);
         $trashMessages = ContactMessage::onlyTrashed()
             ->latest('deleted_at')
             ->paginate(10);
@@ -49,9 +52,18 @@ class ContactMessageController extends Controller
 
     public function restore($id)
     {
-        ContactMessage::onlyTrashed()
-            ->findOrFail($id)
-            ->restore();
+        $message = ContactMessage::onlyTrashed()
+            ->findOrFail($id);
+
+        $this->authorize('restore', $message);
+
+        $message->restore();
+
+        activityLog(
+            'Message',
+            'Restore',
+            $message->email
+        );
 
         return redirect()
             ->route('admin.messages.trash')
@@ -60,9 +72,18 @@ class ContactMessageController extends Controller
 
     public function forceDelete($id)
     {
-        ContactMessage::onlyTrashed()
-            ->findOrFail($id)
-            ->forceDelete();
+        $message = ContactMessage::onlyTrashed()
+            ->findOrFail($id);
+
+        $this->authorize('forceDelete', $message);
+
+        activityLog(
+            'Message',
+            'Permanent Delete',
+            $message->email
+        );
+
+        $message->forceDelete();
 
         return redirect()
             ->route('admin.messages.trash')

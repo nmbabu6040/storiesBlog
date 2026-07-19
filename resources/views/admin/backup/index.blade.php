@@ -46,18 +46,18 @@
 
                 <tbody>
 
-                    @forelse($files as $file)
+                    @forelse($backups as $backup)
                         <tr>
 
-                            <td>{{ $file->getFilename() }}</td>
+                            <td>{{ $backup->getFilename() }}</td>
 
-                            <td>{{ round($file->getSize() / 1024 / 1024, 2) }} MB</td>
+                            <td>{{ round($backup->getSize() / 1024 / 1024, 2) }} MB</td>
 
-                            <td>{{ date('d M Y h:i A', $file->getMTime()) }}</td>
+                            <td>{{ date('d M Y h:i A', $backup->getMTime()) }}</td>
 
                             <td>
 
-                                <a href="{{ route('admin.backup.download', $file->getFilename()) }}"
+                                <a href="{{ route('admin.backup.download', $backup->getFilename()) }}"
                                     class="btn btn-success btn-sm">
 
                                     Download

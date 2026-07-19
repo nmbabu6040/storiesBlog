@@ -3,9 +3,7 @@
 
     <div class="p-3 mb-5">
 
-        {{-- <h4>
-            Stories Blog
-        </h4> --}}
+
 
         <img src="{{ asset('storage/' . $siteSetting->header_logo) }}" alt="Stories Blog" class="img-fluid">
 
@@ -13,31 +11,33 @@
 
     <ul class="nav flex-column">
 
-        <li class="nav-item">
-            <a href="{{ route('admin.dashboard') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.dashboard') ? 'bg-primary' : '' }}">
-
-                <i class="fa-solid fa-gauge"></i>
-                Dashboard
-            </a>
-        </li>
-
-        <li class="nav-item">
-
-            <a href="{{ route('admin.menus.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.menus.*') ? 'bg-primary' : '' }}">
-
-                <i class="fa-solid fa-bars"></i>
-
-                <span>Menus</span>
-
-            </a>
-
-        </li>
-
-        @role('Super Admin|Admin')
+        @can('dashboard')
             <li class="nav-item">
+                <a href="{{ route('admin.dashboard') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.dashboard') ? 'bg-primary' : '' }}">
 
+                    <i class="fa-solid fa-gauge"></i>
+                    Dashboard
+                </a>
+            </li>
+        @endcan
+
+        @can('manage-menus')
+            <li class="nav-item">
+                <a href="{{ route('admin.menus.index') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.menus.*') ? 'bg-primary' : '' }}">
+
+                    <i class="fa-solid fa-bars"></i>
+
+                    <span>Menus</span>
+
+                </a>
+            </li>
+        @endcan
+
+
+        @can('manage-pages')
+            <li class="nav-item">
                 <a href="{{ route('admin.pages.index') }}"
                     class="nav-link text-white {{ request()->routeIs('admin.pages.*') ? 'bg-primary' : '' }}">
 
@@ -46,11 +46,11 @@
                     <span>Pages</span>
 
                 </a>
-
             </li>
-        @endrole
+        @endcan
 
-        @role('Super Admin|Admin|Editor')
+
+        @can('manage-categories')
             <li class="nav-item">
                 <a href="{{ route('admin.categories.index') }}"
                     class="nav-link text-white {{ request()->routeIs('admin.categories.*') ? 'bg-primary' : '' }}">
@@ -59,9 +59,9 @@
                     Categories
                 </a>
             </li>
-        @endrole
+        @endcan
 
-        @role('Super Admin|Admin|Editor|Author')
+        @can('manage-posts')
             <li class="nav-item">
                 <a href="{{ route('admin.posts.index') }}"
                     class="nav-link text-white {{ request()->routeIs('admin.posts.*') ? 'bg-primary' : '' }}">
@@ -70,54 +70,62 @@
                     Posts
                 </a>
             </li>
-        @endrole
+        @endcan
 
 
-        <li class="nav-item">
+        @can('manage-tags')
+            <li class="nav-item">
 
-            <a href="{{ route('admin.tags.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.tags.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.tags.index') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.tags.*') ? 'active' : '' }}">
 
-                <i class="fas fa-tags me-2"></i>
+                    <i class="fas fa-tags me-2"></i>
 
-                <span>
+                    <span>
 
-                    Tags
+                        Tags
 
-                </span>
+                    </span>
 
-            </a>
+                </a>
 
-        </li>
+            </li>
+        @endcan
+
+
+
+        @can('manage-messages')
+            <li class="nav-item">
+
+                <a href="{{ route('admin.messages.index') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.messages.*') ? 'bg-primary' : '' }}">
+
+                    <i class="fa-solid fa-message"></i>
+                    Messages
+
+                </a>
+
+            </li>
+        @endcan
+
+        @can('manage-subscribers')
+            <li class="nav-item">
+
+                <a href="{{ route('admin.subscribers.index') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.subscribers.*') ? 'bg-primary' : '' }}">
+
+                    <i class="fa-solid fa-user"></i>
+                    Subscribers
+
+                </a>
+
+            </li>
+        @endcan
 
 
 
 
-        <li class="nav-item">
-
-            <a href="{{ route('admin.messages.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.messages.*') ? 'bg-primary' : '' }}">
-
-                <i class="fa-solid fa-message"></i>
-                Messages
-
-            </a>
-
-        </li>
-
-        <li class="nav-item">
-
-            <a href="{{ route('admin.subscribers.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.subscribers.*') ? 'bg-primary' : '' }}">
-
-                <i class="fa-solid fa-user"></i>
-                Subscribers
-
-            </a>
-
-        </li>
-
-        @role('Super Admin')
+        @can('manage-settings')
             <li class="nav-item">
                 <a href="{{ route('admin.settings.edit') }}"
                     class="nav-link text-white {{ request()->routeIs('admin.settings.edit') ? 'bg-primary' : '' }}">
@@ -125,9 +133,9 @@
                     <span>Settings</span>
                 </a>
             </li>
-        @endrole
+        @endcan
 
-        @role('Super Admin|Admin|Editor')
+        @can('manage-gallery')
             <li class="nav-item">
 
                 <a href="{{ route('admin.galleries.index') }}"
@@ -139,22 +147,27 @@
                 </a>
 
             </li>
-        @endrole
+        @endcan
 
-        <li class="nav-item">
 
-            <a href="{{ route('admin.media.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.media.*') ? 'bg-primary' : '' }}">
+        @can('manage-media')
+            <li class="nav-item">
 
-                <i class="fa-solid fa-photo-film"></i>
+                <a href="{{ route('admin.media.index') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.media.*') ? 'bg-primary' : '' }}">
 
-                Media Library
+                    <i class="fa-solid fa-photo-film"></i>
 
-            </a>
+                    Media Library
 
-        </li>
+                </a>
 
-        @role('Super Admin|Admin|Editor')
+            </li>
+        @endcan
+
+
+
+        @can('manage-comments')
             <li class="nav-item">
 
                 <a href="{{ route('admin.comments.index') }}"
@@ -165,9 +178,9 @@
 
                 </a>
             </li>
-        @endrole
+        @endcan
 
-        @role('Super Admin|Admin')
+        @can('manage-users')
             <li class="nav-item">
                 <a href="{{ route('admin.users.index') }}"
                     class="nav-link text-white {{ request()->routeIs('admin.users.*') ? 'bg-primary' : '' }}">
@@ -175,58 +188,71 @@
                     <span>Users</span>
                 </a>
             </li>
-        @endrole
+        @endcan
 
-        <li class="nav-item">
 
-            <a href="{{ route('admin.profile.edit') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.profile.edit') ? 'bg-primary' : '' }}">
 
-                <i class="fas fa-user-circle"></i>
+        @can('manage-profile')
+            <li class="nav-item">
 
-                My Profile
+                <a href="{{ route('admin.profile.edit') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.profile.edit') ? 'bg-primary' : '' }}">
 
-            </a>
+                    <i class="fas fa-user-circle"></i>
 
-        </li>
+                    My Profile
 
-        <li class="nav-item">
+                </a>
 
-            <a href="{{ route('admin.backup.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.backups.*') ? 'bg-primary' : '' }}">
+            </li>
+        @endcan
 
-                <i class="fas fa-database"></i>
 
-                <span>
+        @can('manage-backup')
+            <li class="nav-item">
 
-                    Backup
+                <a href="{{ route('admin.backup.index') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.backups.*') ? 'bg-primary' : '' }}">
 
-                </span>
+                    <i class="fas fa-database"></i>
 
-            </a>
+                    <span>
 
-        </li>
+                        Backup
 
-        <li class="nav-item">
+                    </span>
 
-            <a href="{{ route('admin.activity.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.activity.index') ? 'bg-primary' : '' }}">
+                </a>
 
-                <i class="fas fa-history"></i>
+            </li>
+        @endcan
 
-                Activity Log
 
-            </a>
+        @can('manage-activity')
+            <li class="nav-item">
 
-        </li>
+                <a href="{{ route('admin.activity.index') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.activity.index') ? 'bg-primary' : '' }}">
 
-        <li class="nav-item">
-            <a href="{{ route('admin.advertisements.index') }}"
-                class="nav-link text-white {{ request()->routeIs('admin.advertisements.*') ? 'bg-primary' : '' }}">
-                <i class="fas fa-ad"></i>
-                Advertisements
-            </a>
-        </li>
+                    <i class="fas fa-history"></i>
+
+                    Activity Log
+
+                </a>
+
+            </li>
+        @endcan
+
+
+        @can('manage-advertisements')
+            <li class="nav-item">
+                <a href="{{ route('admin.advertisements.index') }}"
+                    class="nav-link text-white {{ request()->routeIs('admin.advertisements.*') ? 'bg-primary' : '' }}">
+                    <i class="fas fa-ad"></i>
+                    Advertisements
+                </a>
+            </li>
+        @endcan
 
     </ul>
     <div class="mt-auto p-3">

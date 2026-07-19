@@ -11,6 +11,7 @@ return [
     | by the framework. The "local" disk, as well as a variety of cloud
     | based disks are available to your application for file storage.
     |
+    |
     */
 
     'default' => env('FILESYSTEM_DISK', 'local'),
@@ -32,6 +33,8 @@ return [
 
         'local' => [
             'driver' => 'local',
+            // Spatie backup জিপ ফাইলটি অ্যাপের নাম (blogStories) দিয়ে ফোল্ডার তৈরি করবে,
+            // তাই রুট পাথ storage/app/private রাখলেই ফাইলগুলো storage/app/private/blogStories এ জমা হবে।
             'root' => storage_path('app/private'),
             'serve' => true,
             'throw' => false,
@@ -41,7 +44,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            'url' => rtrim(env('APP_URL', 'http://localhost'), '/') . '/storage',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

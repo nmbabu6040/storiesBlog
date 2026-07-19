@@ -5,30 +5,48 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Gate;
 
 class BackupController extends Controller
 {
+    private function backupPath(): string
+    {
+        return storage_path('app/private/blogStories/blogStories');
+    }
+
     public function index()
     {
-        // $path = storage_path('app/private/blogStories');
-        $path = storage_path(
-            'app/private/' . config('backup.backup.name')
-        );
+        $path = $this->backupPath();
 
+        // ফোল্ডারটি না থাকলে তৈরি করবে
         if (!File::exists($path)) {
-            File::makeDirectory($path, 0755, true);
+            File::makeDirectory($path, 0755, true, true);
         }
 
-        $files = collect(File::files($path))
-            ->filter(fn($file) => str_ends_with($file->getFilename(), '.zip'))
-            ->sortByDesc(fn($file) => $file->getMTime());
+        // ফোল্ডারের ভেতরের সব জিপ ফাইল নিয়ে আসবে
+        $files = File::files($path);
 
-        return view('admin.backup.index', compact('files'));
+        // ফাইলগুলোকে ডেট অনুযায়ী সাজিয়ে ব্লেড ভিউতে পাঠানো
+        $backups = collect($files)->map(function ($file) {
+            return [
+                'file_name' => $file->getFilename(),
+                'file_size' => round($file->getSize() / 1024 / 1024, 2) . ' MB',
+                'created_at' => date('Y-m-d H:i:s', $file->getMTime()),
+            ];
+        })->sortByDesc('created_at');
+
+        return view('admin.backup.index', compact('backups'));
     }
 
     public function create()
     {
-        Artisan::call('backup:run');
+
+
+        Gate::authorize('backup-create');
+
+        $exitCode = Artisan::call('backup:run');
+
+
 
         activityLog(
             'System',
@@ -43,47 +61,53 @@ class BackupController extends Controller
             'system'
         );
 
-        return back()->with(
-            'success',
-            'Backup Created Successfully.'
-        );
+        return redirect()
+            ->route('admin.backup.index')
+            ->with('success', Artisan::output());
     }
 
     public function download($file)
     {
-        // $path = storage_path('app/private/' . $file);
-        // $path = storage_path('app/private/blogStories/' . $file);
-        $path = storage_path(
-            'app/private/' . config('backup.backup.name') . '/' . $file
-        );
+        Gate::authorize('backup-download');
+
+        $file = basename($file);
+
+        $path = $this->backupPath() . DIRECTORY_SEPARATOR . $file;
 
         abort_unless(File::exists($path), 404);
+
+        activityLog(
+            'System',
+            'Backup Download',
+            auth()->user()->name . ' downloaded backup: ' . $file
+        );
 
         return response()->download($path);
     }
 
     public function delete($file)
     {
-        // $path = storage_path('app/private/' . $file);
-        // $path = storage_path('app/private/blogStories/' . $file);
-        $path = storage_path(
-            'app/private/' . config('backup.backup.name') . '/' . $file
-        );
+        Gate::authorize('backup-delete');
 
-        if (File::exists($path)) {
+        $file = basename($file);
 
-            File::delete($path);
+        $path = $this->backupPath() . DIRECTORY_SEPARATOR . $file;
 
-            activityLog(
-                'System',
-                'Backup Delete',
-                auth()->user()->name . ' deleted backup.'
-            );
+        if (!File::exists($path)) {
+            return back()->with('error', 'Backup file not found.');
         }
+
+        File::delete($path);
+
+        activityLog(
+            'System',
+            'Backup Delete',
+            auth()->user()->name . ' deleted backup: ' . $file
+        );
 
         return back()->with(
             'success',
-            'Backup Deleted Successfully.'
+            'Backup deleted successfully.'
         );
     }
 }

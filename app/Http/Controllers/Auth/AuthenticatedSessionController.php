@@ -28,13 +28,19 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = auth()->user();
+
+        if ($user->hasRole('Subscriber')) {
+            return redirect()->route('home'); // অথবা return redirect('/');
+        }
+
         activityLog(
             'Authentication',
             'Login',
             auth()->user()->name . ' logged in.'
         );
 
-        return redirect()->intended(route('admin.dashboard', absolute: false));
+        return redirect()->intended(route('admin.dashboard'));
     }
 
     /**

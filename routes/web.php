@@ -35,14 +35,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 
-// Route::get('/force-logout', function () {
-//     Auth::logout();
+Route::get('/force-logout', function () {
+    Auth::logout();
 
-//     request()->session()->invalidate();
-//     request()->session()->regenerateToken();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
 
-//     return redirect('/');
-// });
+    return redirect('/');
+});
 
 // Route::get('/mail-test', function () {
 

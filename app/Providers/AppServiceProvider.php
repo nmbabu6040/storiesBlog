@@ -23,12 +23,18 @@ use App\Models\User;
 use App\Policies\UserPolicy;
 use App\Models\ContactMessage;
 use App\Policies\ContactMessagePolicy;
+use App\Models\Subscriber;
+use App\Policies\SubscriberPolicy;
+use App\Policies\BackupPolicy;
+use App\Models\ActivityLog;
+use App\Policies\ActivityLogPolicy;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Advertisement;
 use App\Policies\AdvertisementPolicy;
 use App\Policies\CategoryPolicy;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -45,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Paginator::useBootstrapFive();
         Gate::policy(Category::class, CategoryPolicy::class);
         Gate::policy(Page::class, PagePolicy::class);
         Gate::policy(Menu::class, MenuPolicy::class);
@@ -56,6 +63,13 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Comment::class, CommentPolicy::class);
         Gate::policy(ContactMessage::class, ContactMessagePolicy::class);
         Gate::policy(Advertisement::class, AdvertisementPolicy::class);
+        Gate::policy(Subscriber::class, SubscriberPolicy::class);
+        Gate::policy(ActivityLog::class, ActivityLogPolicy::class);
+        Gate::define('backup-view', [BackupPolicy::class, 'viewAny']);
+        Gate::define('backup-create', [BackupPolicy::class, 'create']);
+        Gate::define('backup-download', [BackupPolicy::class, 'download']);
+        Gate::define('backup-delete', [BackupPolicy::class, 'delete']);
+
 
 
         View::composer('*', function ($view) {

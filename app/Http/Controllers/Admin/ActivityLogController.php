@@ -10,6 +10,8 @@ class ActivityLogController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', ActivityLog::class);
+
         $logs = ActivityLog::with('user')
 
             ->when($request->module, function ($q) use ($request) {
@@ -34,6 +36,8 @@ class ActivityLogController extends Controller
 
     public function destroy(ActivityLog $activityLog)
     {
+        $this->authorize('delete', $activityLog);
+
         $activityLog->delete();
 
         return back()->with(
@@ -44,7 +48,15 @@ class ActivityLogController extends Controller
 
     public function clear()
     {
+        $this->authorize('clear', ActivityLog::class);
+
         ActivityLog::truncate();
+
+        activityLog(
+            'Activity Log',
+            'Clear',
+            auth()->user()->name . ' cleared all activity logs.'
+        );
 
         return back()->with(
             'success',

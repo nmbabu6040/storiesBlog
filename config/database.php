@@ -65,7 +65,11 @@ return [
 
             'dump' => [
 
-                'dump_binary_path' => 'C:\xampp\mysql\bin',
+                'dump_binary_path' => 'C:/xampp/mysql/bin',
+
+                'useSingleTransaction' => true,
+
+                'timeout' => 60,
 
             ],
         ],

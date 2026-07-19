@@ -14,6 +14,7 @@ class SubscriberController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Subscriber::class);
         $subscribers = Subscriber::latest()->paginate(20);
 
         return view(
@@ -25,11 +26,13 @@ class SubscriberController extends Controller
     public function create()
     {
 
+        $this->authorize('create', Subscriber::class);
         return view('admin.subscribers.newsletter');
     }
 
     public function send(Request $request)
     {
+        $this->authorize('create', Subscriber::class);
         $request->validate([
             'subject' => 'required|max:255',
             'body' => 'required',
@@ -62,6 +65,7 @@ class SubscriberController extends Controller
 
     public function trash()
     {
+        $this->authorize('viewAny', Subscriber::class);
         $trashSubscribers = Subscriber::onlyTrashed()
             ->latest('deleted_at')
             ->paginate(10);
@@ -74,9 +78,18 @@ class SubscriberController extends Controller
 
     public function restore($id)
     {
-        Subscriber::onlyTrashed()
-            ->findOrFail($id)
-            ->restore();
+        $subscriber = Subscriber::onlyTrashed()
+            ->findOrFail($id);
+
+        $this->authorize('restore', $subscriber);
+
+        $subscriber->restore();
+
+        activityLog(
+            'Subscriber',
+            'Restore',
+            $subscriber->email
+        );
 
         return back()->with(
             'success',
@@ -86,9 +99,18 @@ class SubscriberController extends Controller
 
     public function forceDelete($id)
     {
-        Subscriber::onlyTrashed()
-            ->findOrFail($id)
-            ->forceDelete();
+        $subscriber = Subscriber::onlyTrashed()
+            ->findOrFail($id);
+
+        $this->authorize('forceDelete', $subscriber);
+
+        activityLog(
+            'Subscriber',
+            'Permanent Delete',
+            $subscriber->email
+        );
+
+        $subscriber->forceDelete();
 
         return back()->with(
             'success',
@@ -98,6 +120,7 @@ class SubscriberController extends Controller
 
     public function destroy(Subscriber $subscriber)
     {
+        $this->authorize('delete', $subscriber);
         activityLog(
             'Subscriber',
             'Delete',
@@ -114,6 +137,22 @@ class SubscriberController extends Controller
 
     public function bulkDelete(Request $request)
     {
+        $this->authorize('delete', Subscriber::class);
+
+        $subscribers = Subscriber::whereIn(
+            'id',
+            $request->ids ?? []
+        )->get();
+
+        foreach ($subscribers as $subscriber) {
+
+            activityLog(
+                'Subscriber',
+                'Delete',
+                $subscriber->email
+            );
+        }
+
         Subscriber::whereIn(
             'id',
             $request->ids ?? []
@@ -127,6 +166,7 @@ class SubscriberController extends Controller
 
     public function export()
     {
+        $this->authorize('viewAny', Subscriber::class);
         $fileName = 'subscribers.csv';
 
         $subscribers = Subscriber::latest()->get();

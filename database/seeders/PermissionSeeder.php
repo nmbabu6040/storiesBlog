@@ -11,30 +11,61 @@ class PermissionSeeder extends Seeder
     {
         $permissions = [
 
+            // Dashboard
             'dashboard',
 
+            // Users & Roles
             'manage-users',
 
-            'manage-settings',
-
+            // Posts
             'manage-posts',
 
-            'manage-menus',
-
+            // Categories
             'manage-categories',
 
+            // Tags
+            'manage-tags',
+
+            // Pages
             'manage-pages',
 
+            // Menus
+            'manage-menus',
+
+            // Comments
             'manage-comments',
 
+            // Gallery
             'manage-gallery',
 
+            // Media Library
+            'manage-media',
+
+            // Messages
+            'manage-messages',
+
+            // Subscribers
+            'manage-subscribers',
+
+            // Advertisements
+            'manage-advertisements',
+
+            // Settings
+            'manage-settings',
+
+            // Activity Log
+            'manage-activity',
+
+            // Backup
+            'manage-backup',
+
+            // Profile
+            'manage-profile',
         ];
 
         foreach ($permissions as $permission) {
-
             Permission::firstOrCreate([
-                'name' => $permission
+                'name' => $permission,
             ]);
         }
     }
